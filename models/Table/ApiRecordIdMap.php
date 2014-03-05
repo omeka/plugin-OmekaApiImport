@@ -35,7 +35,5 @@ class Table_ApiRecordIdMap extends Omeka_Db_Table
         $this->applySearchFilters($select, $params);
         $data = $this->getDb()->fetchAssoc($select);
         return $data;
-        
-        
     }
 }

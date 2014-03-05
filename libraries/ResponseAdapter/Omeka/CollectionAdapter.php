@@ -11,25 +11,17 @@ class ApiImport_ResponseAdapter_Omeka_CollectionAdapter extends ApiImport_Respon
      */
     public function import()
     {
-        //avoid accidental duplications
+        $collectionMetadata = $this->collectionMetadata();
+        $elementTexts = $this->elementTexts();
+        debug(print_r($elementTexts, true));
         if($this->record && $this->record->exists()) {
-            $this->update();
+            $collectionMetadata['overwriteElementTexts'] = true;
+            update_collection($this->record, $collectionMetadata, $elementTexts);
         } else {
-            echo 'inserting collection';
-            $collection = insert_collection( $this->collectionMetadata());
+            $collection = insert_collection($collectionMetadata, $elementTexts);
             $this->record = $collection;
-            $this->addApiRecordIdMap($collection);
+            $this->addApiRecordIdMap();
         }
-    }
-
-    /**
-     * Update the collection in the database
-     * @see ApiImport_ResponseAdapter_RecordAdapterInterface::update()
-     */
-    public function update()
-    {
-        echo 'updating collection';
-        update_collection($this->record, $this->collectionMetadata());
     }
 
     /**
@@ -57,4 +49,24 @@ class ApiImport_ResponseAdapter_Omeka_CollectionAdapter extends ApiImport_Respon
         $metadata['featured'] = $responseJson['featured'];
         return $metadata;
     }
+    
+    protected function elementTexts($response = null)
+    {
+        $elementTexts = array();
+        if(!$response) {
+            $response = json_decode($this->response->getBody(), true);
+        }
+        
+        foreach($response['element_texts'] as $elTextData) {
+            $elName = $elTextData['element']['name'];
+            $elSet = $elTextData['element_set']['name'];
+            $elTextInsertArray = array('text' => $elTextData['text'],
+                                       'html' => $elTextData['html']
+                                       );
+            $elementTexts[$elSet][$elName][] = $elTextInsertArray;
+            
+        }
+        return $elementTexts;
+    }    
+    
 }

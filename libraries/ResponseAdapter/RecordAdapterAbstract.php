@@ -6,10 +6,13 @@ abstract class ApiImport_ResponseAdapter_RecordAdapterAbstract implements ApiImp
     protected $record;
     protected $recordType;
     protected $endpointUri;
+    protected $service;
     protected $db;
+    protected $messages;
 
     public function __construct($response, $endpointUri)
     {
+        $this->messages = array();
         $this->db = get_db();
         $this->response = $response;
         $this->endpointUri = $endpointUri;
@@ -17,8 +20,31 @@ abstract class ApiImport_ResponseAdapter_RecordAdapterAbstract implements ApiImp
         if(is_null($this->recordType)) {
             throw new Api_Import_RecordAdapterException(__("Record adapters must declare a record type"));
         }
+        if($this->record && (get_class($this->record) != $this->recordType)) {
+            throw new Api_Import_RecordAdapterException(__("Declared adapter record type must match local record type"));
+        }        
     }
 
+    public function setService($service)
+    {
+        $this->service = $service;
+    }
+
+    public function getService()
+    {
+        return $this->service;
+    }
+    
+    public function getMessages()
+    {
+        
+    }
+    
+    public function addMessage($message)
+    {
+        
+    }
+    
     /**
      * Return the local record being worked with
      *
@@ -60,9 +86,10 @@ abstract class ApiImport_ResponseAdapter_RecordAdapterAbstract implements ApiImp
         $id = $this->externalId();
         $map = new ApiRecordIdMap();
         $map->record_type = $recordType;
-        $map->local_id = $record->id;
+        $map->local_id = $this->record->id;
         $map->external_id = $id;
         $map->endpoint_uri = $this->endpointUri;
+        debug($this->endpointUri);
         $map->save();
     }
 
