@@ -5,6 +5,7 @@ class Table_ApiRecordIdMap extends Omeka_Db_Table
     public function localRecord($recordType, $externalId, $endpointUri)
     {
         $select = $this->getSelect();
+        $alias = $this->getTableAlias();
         $recordTable = $this->getDb()->getTable($recordType);
         $recordTableAlias = $recordTable->getTableAlias();
         $select = $recordTable->getSelect();
@@ -14,10 +15,9 @@ class Table_ApiRecordIdMap extends Omeka_Db_Table
                     "api_record_id_maps.local_id = $recordTableAlias.id",
                     null
                 );
-        $select->where('record_type = ?', $recordType);
-        $select->where('external_id = ?', $externalId);
-
-        $select->where('endpoint_uri = ?', $endpointUri);
+        $select->where("$alias.record_type = ?", $recordType);
+        $select->where("$alias.external_id = ?", $externalId);
+        $select->where("$alias.endpoint_uri = ?", $endpointUri);
         return $recordTable->fetchObject($select);
     }
     

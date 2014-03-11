@@ -13,7 +13,6 @@ class ApiImport_ResponseAdapter_Omeka_CollectionAdapter extends ApiImport_Respon
     {
         $collectionMetadata = $this->collectionMetadata();
         $elementTexts = $this->elementTexts();
-        debug(print_r($elementTexts, true));
         if($this->record && $this->record->exists()) {
             $collectionMetadata['overwriteElementTexts'] = true;
             update_collection($this->record, $collectionMetadata, $elementTexts);
@@ -30,8 +29,7 @@ class ApiImport_ResponseAdapter_Omeka_CollectionAdapter extends ApiImport_Respon
      */
     public function externalId()
     {
-        $responseJson = json_decode($this->response->getBody(), true);
-        return $responseJson['id'];
+        return $this->responseData['id'];
     }
 
     /**
@@ -43,21 +41,20 @@ class ApiImport_ResponseAdapter_Omeka_CollectionAdapter extends ApiImport_Respon
      */
     protected function collectionMetadata()
     {
-        $responseJson = json_decode($this->response->getBody(), true);
         $metadata = array();
-        $metadata['public'] = $responseJson['public'];
-        $metadata['featured'] = $responseJson['featured'];
+        $metadata['public'] = $this->responseData['public'];
+        $metadata['featured'] = $this->responseData['featured'];
         return $metadata;
     }
     
-    protected function elementTexts($response = null)
+    protected function elementTexts($responseData = null)
     {
         $elementTexts = array();
-        if(!$response) {
-            $response = json_decode($this->response->getBody(), true);
+        if(!$responseData) {
+            $responseData = $this->responseData;
         }
         
-        foreach($response['element_texts'] as $elTextData) {
+        foreach($responseData['element_texts'] as $elTextData) {
             $elName = $elTextData['element']['name'];
             $elSet = $elTextData['element_set']['name'];
             $elTextInsertArray = array('text' => $elTextData['text'],

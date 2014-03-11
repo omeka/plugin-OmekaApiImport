@@ -26,18 +26,17 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
 
     public function externalId()
     {
-        $responseJson = json_decode($this->response->getBody(), true);
-        return $responseJson['id'];
+        return $this->responseData['id'];
     }
     
-    protected function elementTexts($response = null)
+    protected function elementTexts($responseData = null)
     {
         $elementTexts = array();
-        if(!$response) {
-            $response = json_decode($this->response->getBody(), true);
+        if(!$responseData) {
+            $responseData = json_decode($this->response->getBody(), true);
         }
         
-        foreach($response['element_texts'] as $elTextData) {
+        foreach($responseData['element_texts'] as $elTextData) {
             $elName = $elTextData['element']['name'];
             $elSet = $elTextData['element_set']['name'];
             $elTextInsertArray = array('text' => $elTextData['text'],
@@ -53,10 +52,10 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
     {
         $responseJson = json_decode($this->response->getBody(), true);
         $metadata = array();
-        $metadata['public'] = $responseJson['public'];
-        $metadata['featured'] = $responseJson['featured'];
+        $metadata['public'] = $this->responseData['public'];
+        $metadata['featured'] = $this->responseData['featured'];
         //external vs internal collection ids could be different
-        $collectionExternalId = $responseJson['collection']['id'];
+        $collectionExternalId = $this->responseData['collection']['id'];
         if(is_null($collectionExternalId)) {
             $metadata['collection_id'] = null;
         } else {
@@ -71,7 +70,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             $metadata['collection_id'] = $collectionId;
         }
 
-        $itemType = $responseJson['item_type'] ? $this->localRecord('ItemType', $responseJson['item_type']['id']) : null;
+        $itemType = $this->responseData['item_type'] ? $this->localRecord('ItemType', $this->responseData['item_type']['id']) : null;
         if($itemType) {
             $itemTypeId = $itemType->id;
         } else {
@@ -80,7 +79,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
         $metadata['item_type_id'] = $itemTypeId;
         
         $tagsArray = array();
-        foreach($responseJson['tags'] as $tagData) {
+        foreach($this->responseData['tags'] as $tagData) {
             $tagsArray[] = $tagData['name'];
         }
         $metadata['tags'] = implode(',', $tagsArray);
@@ -115,7 +114,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
         $files = array();
         $response = $this->service->files->get(null, array('item' => $this->externalId()));
         if($response->getStatus() == 200) {
-            $responseJson = json_decode($response->getBody(), true);
+            $responseData = json_decode($response->getBody(), true);
         } else {
             debug(print_r($response->getBody(), true));
             debug($response->getMessage());
@@ -126,7 +125,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
                                                                'endpoint_uri' => $this->endpointUri
                                                          ));
         $ids = array_keys($externalIds);    
-        foreach($responseJson as $fileData) {
+        foreach($responseData as $fileData) {
             if(! in_array($fileData['id'], $ids)) {
                 $files[] = array('source'   => $fileData['file_urls']['original'],
                                  'metadata' => $this->elementTexts($fileData),
@@ -141,7 +140,10 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
     protected function importCollection($collectionId)
     {
         $response = $this->service->collections->get($collectionId);
-        $adapter = new ApiImport_ResponseAdapter_Omeka_CollectionAdapter($response, $this->endpointUri);
+        if($response->getStatus() == 200) {
+            $responseData = json_decode($response->getBody(), true);
+            $adapter = new ApiImport_ResponseAdapter_Omeka_CollectionAdapter($responseData, $this->endpointUri);
+        }
         $adapter->setService($this->service);
         $adapter->import();
         return $adapter->getRecord();
