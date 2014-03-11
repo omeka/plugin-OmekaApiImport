@@ -3,12 +3,13 @@ class ApiImport_IndexController extends Omeka_Controller_AbstractActionControlle
 {
     public function init()
     {
+
         include( PLUGIN_DIR . '/ApiImport/libraries/ResponseAdapter/RecordAdapterInterface.php');
         include( PLUGIN_DIR . '/ApiImport/libraries/ResponseAdapter/RecordAdapterAbstract.php');
-        include( PLUGIN_DIR . '/ApiImport/libraries/ResponseAdapter/Omeka/ItemAdapter.php');
-        include( PLUGIN_DIR . '/ApiImport/libraries/ResponseAdapter/Omeka/CollectionAdapter.php');
-        include( PLUGIN_DIR . '/ApiImport/libraries/ResponseAdapter/Omeka/ElementSetAdapter.php');
         include( PLUGIN_DIR . '/ApiImport/libraries/ZendService_Omeka/Omeka.php');
+        foreach(glob(PLUGIN_DIR . "/ApiImport/libraries/ResponseAdapter/Omeka/*.php") as $adapterClass) {
+            include($adapterClass);
+        }        
     }
     
     public function itemAction()
@@ -32,7 +33,7 @@ class ApiImport_IndexController extends Omeka_Controller_AbstractActionControlle
     {
             $omeka = new Zend_Service_Omeka('http://localhost/OFrontPage/api');
             $omeka->setKey('');
-            $response = $omeka->element_sets->get(4);
+            $response = $omeka->element_set->get(4);
             if($response->getStatus() == 200) {
                 $responseData = json_decode($response->getBody(), true);
                 $adapter = new ApiImport_ResponseAdapter_Omeka_ElementSetAdapter($responseData, 'http://localhost/OFrontPage/api');
@@ -42,4 +43,19 @@ class ApiImport_IndexController extends Omeka_Controller_AbstractActionControlle
                 throw new Exception($response->getMessage());
             }        
     }
+    
+    public function elementAction()
+    {
+            $omeka = new Zend_Service_Omeka('http://localhost/OFrontPage/api');
+            $omeka->setKey('');
+            $response = $omeka->elements->get(86);
+            if($response->getStatus() == 200) {
+                $responseData = json_decode($response->getBody(), true);
+                $adapter = new ApiImport_ResponseAdapter_Omeka_ElementAdapter($responseData, 'http://localhost/OFrontPage/api');
+                $adapter->setService($omeka);
+                $adapter->import();                
+            } else {
+                throw new Exception($response->getMessage());
+            }        
+    }    
 }
