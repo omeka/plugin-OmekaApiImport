@@ -4,7 +4,7 @@
 class ApiImportPlugin extends Omeka_Plugin_AbstractPlugin
 
 {
-    protected $_hooks = array('install', 'uninstall');
+    protected $_hooks = array('install', 'uninstall', 'after_delete_record');
     protected $_filters = array('admin_navigation_main');
     
     public function setUp()
@@ -45,5 +45,13 @@ class ApiImportPlugin extends Omeka_Plugin_AbstractPlugin
                        'uri'   => url('api-import/index/index')
                 );
         return $nav;
+    }
+    
+    public function hookAfterDeleteRecord($args)
+    {
+        $apiRecordMap = get_db()->getTable('ApiImportMap')->findBy(array('local_id' => $record->id, 
+                                                                          'record_type' => get_class($record)));
+        $apiRecordMap = $apiRecordMap[0];
+        $apiRecordMap->delete();
     }
 }
