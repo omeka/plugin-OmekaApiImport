@@ -8,13 +8,13 @@ abstract class ApiImport_ResponseAdapter_RecordAdapterAbstract implements ApiImp
     protected $endpointUri;
     protected $service;
     protected $db;
-    protected $messages;
 
     public function __construct($responseData, $endpointUri)
     {
-        if(!$this->recordType) {
-            throw new ApiImport_ResponseAdapter_RecordAdapterException("RecordAdapters must declare a recordType");
+        if(is_null($this->recordType)) {
+            throw new Api_Import_RecordAdapterException(__("Record adapters must declare a record type"));
         }
+
         $this->construct($responseData, $endpointUri);    
     }
     
@@ -31,17 +31,6 @@ abstract class ApiImport_ResponseAdapter_RecordAdapterAbstract implements ApiImp
     public function getService()
     {
         return $this->service;
-    }
-    
-    public function getMessages()
-    {
-        return $this->messages;
-    }
-    
-    public function addMessage($message, $priority = ZEND_LOG::INFO)
-    {
-        _log($message, $priority);
-        $this->messages[$priority][] = $message;
     }
     
     /**
@@ -93,14 +82,11 @@ abstract class ApiImport_ResponseAdapter_RecordAdapterAbstract implements ApiImp
     
     protected function construct($responseData, $endpointUri)
     {
-        $this->messages = array();
         $this->db = get_db();
         $this->responseData = $responseData;
         $this->endpointUri = $endpointUri;
-        $this->record = $this->localRecord();
-        $this->messages = array();
-        if(is_null($this->recordType)) {
-            throw new Api_Import_RecordAdapterException(__("Record adapters must declare a record type"));
+        if(!empty($this->responseData)) {
+            $this->record = $this->localRecord();
         }
         if($this->record && (get_class($this->record) != $this->recordType)) {
             throw new Api_Import_RecordAdapterException(__("Declared adapter record type must match local record type"));

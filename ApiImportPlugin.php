@@ -1,10 +1,19 @@
 <?php
 
+
 class ApiImportPlugin extends Omeka_Plugin_AbstractPlugin
 
 {
     protected $_hooks = array('install', 'uninstall');
     protected $_filters = array('admin_navigation_main');
+    
+    public function setUp()
+    {
+        parent::setUp();
+        foreach(glob(PLUGIN_DIR . '/ApiImport/libraries/ImportProcess/*') as $processClass) {
+            include_once($processClass);
+        }
+    }
     
     public function hookInstall()
     {
@@ -33,7 +42,7 @@ class ApiImportPlugin extends Omeka_Plugin_AbstractPlugin
     public function filterAdminNavigationMain($nav)
     {
         $nav[] = array('label' => __('Omeka Import'),
-                       'uri'   => url('api-import/index/item')
+                       'uri'   => url('api-import/index/index')
                 );
         return $nav;
     }

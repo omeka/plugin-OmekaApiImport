@@ -14,9 +14,11 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
         if($this->record && $this->record->exists()) {
             $itemMetadata['overwriteElementTexts'] = true;
             update_item($this->record, $itemMetadata, $elementTexts);
+            $this->updateItemOwner($this->record);
         } else {
-            $item = insert_item($itemMetadata, $elementTexts);
-            $this->record = $item;
+            $this->record = insert_item($itemMetadata, $elementTexts);
+            //dig up the correct owner information, importing the user if needed
+            $this->updateItemOwner($this->record);
             $this->addApiRecordIdMap();
         }
         
@@ -29,11 +31,31 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
         return $this->responseData['id'];
     }
     
+    protected function updateItemOwner($item)
+    {
+        $ownerId = $this->responseData['owner']['id'];
+        $owner = $this->db->getTable('ApiRecordIdMap')->localRecord('User', $ownerId, $this->endpointUri);
+        if($owner) {
+            $item->owner_id = $owner->id;
+        } else {
+            $response = $this->service->users->get($this->responseData['owner']['id']);
+            if($response->getStatus() == 200) {
+                $responseData = json_decode($response->getBody(), true);
+                $adapter = new ApiImport_ResponseAdapter_Omeka_UserAdapter($responseData, $this->endpointUri);
+                $adapter->import();
+                $item->owner_id = $adapter->record->id;
+            } else {
+                _log($response->getMessage(), Zend_Log::INFO);
+            }
+        }
+        $item->save();
+    }
+    
     protected function elementTexts($responseData = null)
     {
         $elementTexts = array();
         if(!$responseData) {
-            $responseData = json_decode($this->response->getBody(), true);
+            $responseData = $this->responseData;
         }
         
         foreach($responseData['element_texts'] as $elTextData) {
@@ -50,7 +72,6 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
 
     protected function itemMetadata()
     {
-        $responseJson = json_decode($this->response->getBody(), true);
         $metadata = array();
         $metadata['public'] = $this->responseData['public'];
         $metadata['featured'] = $this->responseData['featured'];
@@ -92,7 +113,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             'Url',
             $item,
             array()
-        );        
+        );
         $files = $this->files();
         //have to step through one by on so we can save the id map for each
         foreach($files as $fileData)
