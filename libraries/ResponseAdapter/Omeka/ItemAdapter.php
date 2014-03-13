@@ -115,7 +115,8 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             array()
         );
         $files = $this->files();
-        //have to step through one by on so we can save the id map for each
+        
+        //have to step through one by one so we can save the id map for each $fileRecord and $fileData
         foreach($files as $fileData)
         {
             $fileRecords = $ingester->ingest(array($fileData));
@@ -137,11 +138,11 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
         if($response->getStatus() == 200) {
             $responseData = json_decode($response->getBody(), true);
         } else {
-            debug($response->getMessage());
+            _log($response->getMessage());
         }
 
         $externalIds = $this->db->getTable('ApiRecordIdMap')
-                               ->findExternalIdsByParams(array('record_type' =>'File',
+                                ->findExternalIdsByParams(array('record_type' =>'File',
                                                                'endpoint_uri' => $this->endpointUri
                                                          ));
         $ids = array_keys($externalIds);    

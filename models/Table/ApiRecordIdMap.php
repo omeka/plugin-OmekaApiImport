@@ -21,6 +21,20 @@ class Table_ApiRecordIdMap extends Omeka_Db_Table
         return $recordTable->fetchObject($select);
     }
     
+    public function getImportedEndpoints()
+    {
+        $sql = "
+            SELECT DISTINCT `endpoint_uri`
+            FROM `omeka_api_record_id_maps`
+            WHERE `record_type` NOT
+            IN (
+            'Element', 'ElementSet', 'File', 'ItemType'
+            )
+        ";
+        return $this->getDb()->fetchCol($sql);
+        
+    }
+    
     public function getSelectForExternalIds()
     {
         $select = new Omeka_Db_Select($this->getDb()->getAdapter());

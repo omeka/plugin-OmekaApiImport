@@ -49,9 +49,13 @@ class ApiImportPlugin extends Omeka_Plugin_AbstractPlugin
     
     public function hookAfterDeleteRecord($args)
     {
-        $apiRecordMap = get_db()->getTable('ApiImportMap')->findBy(array('local_id' => $record->id, 
-                                                                          'record_type' => get_class($record)));
-        $apiRecordMap = $apiRecordMap[0];
-        $apiRecordMap->delete();
+        $record = $args['record'];
+        $apiRecordMap = get_db()->getTable('ApiRecordIdMap')->findBy(array('local_id' => $record->id, 
+                                                                           'record_type' => get_class($record)));
+        if(!empty($apiRecordMap)) {
+            $apiRecordMap = $apiRecordMap[0];
+            $apiRecordMap->delete();            
+        }
+
     }
 }

@@ -17,8 +17,11 @@ class ApiImport_ResponseAdapter_Omeka_CollectionAdapter extends ApiImport_Respon
             $collectionMetadata['overwriteElementTexts'] = true;
             update_collection($this->record, $collectionMetadata, $elementTexts);
         } else {
-            $collection = insert_collection($collectionMetadata, $elementTexts);
-            $this->record = $collection;
+            try {
+                $this->record = insert_collection($collectionMetadata, $elementTexts);
+            } catch(Exception $e) {
+                _log($e);
+            }
             $this->addApiRecordIdMap();
         }
     }

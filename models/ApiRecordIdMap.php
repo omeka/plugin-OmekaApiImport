@@ -9,6 +9,13 @@ class ApiRecordIdMap extends Omeka_Record_AbstractRecord
 
     protected function afterDelete()
     {
-        $record = $this->getDb()->getTable($this->record_type)->find($this->local_id)->delete();
+        $skipTypes = array('File', 'Element', 'ElementSet', 'ItemType');
+        if(! in_array($this->record_type, $skipTypes)) {
+            $record = $this->getDb()->getTable($this->record_type)->find($this->local_id);
+            if($record) {
+                $record->delete();
+            }            
+        }
+
     }
 }

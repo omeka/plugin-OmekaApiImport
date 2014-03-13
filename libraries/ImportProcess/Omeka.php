@@ -25,13 +25,13 @@ class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
         $this->omeka->setKey($this->key);
         $this->getAvailableResources();
         $importableResources = array(
-                'element_sets'     => 'ApiImport_ResponseAdapter_Omeka_ElementSetAdapter',
-                'elements'         => 'ApiImport_ResponseAdapter_Omeka_ElementAdapter',
-                'item_types'       => 'ApiImport_ResponseAdapter_Omeka_ItemTypeAdapter',
+          //      'element_sets'     => 'ApiImport_ResponseAdapter_Omeka_ElementSetAdapter',
+          //      'elements'         => 'ApiImport_ResponseAdapter_Omeka_ElementAdapter',
+          //      'item_types'       => 'ApiImport_ResponseAdapter_Omeka_ItemTypeAdapter',
                 'collections'      => 'ApiImport_ResponseAdapter_Omeka_CollectionAdapter',
                 'items'            => 'ApiImport_ResponseAdapter_Omeka_ItemAdapter'
                 );
-        
+        /*
         $simplePagesAdapter = new ApiImport_ResponseAdapter_Omeka_GenericAdapter(null, $this->endpointUri, 'SimplePagesPage');
         $simplePagesAdapter->setUserProperties(array('modified_by_user', 'created_by_user'));
         $importableResources['simple_pages'] = $simplePagesAdapter;
@@ -39,7 +39,7 @@ class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
         $geolocationAdapter = new ApiImport_ResponseAdapter_Omeka_GenericAdapter(null, $this->endpointUri, 'Location');
         $geolocationAdapter->setResourceProperties(array('item' => 'Item'));
         $importableResources['geolocations'] = $geolocationAdapter;
-        
+        */
         foreach($importableResources as $resource=>$adapter) {
             if(in_array($resource, $this->availableResources)) {
                 $this->importRecords($resource, $adapter);
