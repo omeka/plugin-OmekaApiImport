@@ -6,9 +6,11 @@ class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
     protected $endpointUri;
     protected $key;
     protected $omeka;
+    protected $availableResources;
 
     public function run($args)
     {
+        _log("Beginning Import", Zend_Log::INFO);
         require_once( PLUGIN_DIR . '/ApiImport/libraries/ResponseAdapter/RecordAdapterInterface.php');
         require_once( PLUGIN_DIR . '/ApiImport/libraries/ResponseAdapter/RecordAdapterAbstract.php');
         require_once( PLUGIN_DIR . '/ApiImport/libraries/ZendService_Omeka/Omeka.php');
@@ -21,20 +23,38 @@ class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
         $this->key = $args['key'];
         $this->omeka = new Zend_Service_Omeka($this->endpointUri);
         $this->omeka->setKey($this->key);
+        $this->getAvailableResources();
+        $importableResources = array(
+                'element_sets'     => 'ApiImport_ResponseAdapter_Omeka_ElementSetAdapter',
+                'elements'         => 'ApiImport_ResponseAdapter_Omeka_ElementAdapter',
+                'item_types'       => 'ApiImport_ResponseAdapter_Omeka_ItemTypeAdapter',
+                'collections'      => 'ApiImport_ResponseAdapter_Omeka_CollectionAdapter',
+                'items'            => 'ApiImport_ResponseAdapter_Omeka_ItemAdapter'
+                );
         
-        $this->importRecords('element_sets', 'ApiImport_ResponseAdapter_Omeka_ElementSetAdapter');
-        $this->importRecords('elements', 'ApiImport_ResponseAdapter_Omeka_ElementAdapter');
-        $this->importRecords('item_types', 'ApiImport_ResponseAdapter_Omeka_ItemTypeAdapter');
-        $this->importRecords('collections', 'ApiImport_ResponseAdapter_Omeka_CollectionAdapter');
+        $simplePagesAdapter = new ApiImport_ResponseAdapter_Omeka_GenericAdapter(null, $this->endpointUri, 'SimplePagesPage');
+        $simplePagesAdapter->setUserProperties(array('modified_by_user', 'created_by_user'));
+        $importableResources['simple_pages'] = $simplePagesAdapter;
         
-        $this->importRecords('items', 'ApiImport_ResponseAdapter_Omeka_ItemAdapter');
+        $geolocationAdapter = new ApiImport_ResponseAdapter_Omeka_GenericAdapter(null, $this->endpointUri, 'Location');
+        $geolocationAdapter->setResourceProperties(array('item' => 'Item'));
+        $importableResources['geolocations'] = $geolocationAdapter;
+        
+        foreach($importableResources as $resource=>$adapter) {
+            if(in_array($resource, $this->availableResources)) {
+                $this->importRecords($resource, $adapter);
+            }
+        }
         _log("Done Importing", Zend_Log::INFO);
     }
 
     protected function importRecords($resource, $adapter)
     {
-        $adapter = new $adapter(null, $this->endpointUri);
-        $adapter->setService($this->omeka);
+        if(is_string($adapter)) {
+            $adapter = new $adapter(null, $this->endpointUri);
+            $adapter->setService($this->omeka);
+        }
+
         $page = 1;
         do {
             _log("Importing $resource page $page", Zend_Log::INFO);
@@ -53,6 +73,14 @@ class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
         } while ( $this->hasNextPage($response));
     }
 
+    protected function getAvailableResources()
+    {
+        $response = $this->omeka->resources->get();
+        if($response->getStatus() == 200) {
+            $json = json_decode($response->getBody(), true);
+            $this->availableResources = array_keys($json);
+        }
+    }
     
     protected function hasNextPage($response)
     {
