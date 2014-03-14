@@ -21,15 +21,13 @@ class ApiImport_ResponseAdapter_Omeka_ItemTypeAdapter extends ApiImport_Response
             $this->record->description = $this->responseData['description'];
             $this->record->name = $this->responseData['name'];
         }
-        
+        $this->addElements();
         try {
             $this->record->save(true);
             $this->addApiRecordIdMap();
         } catch(Exception $e) {
             _log($e);
         }
-        
-        $this->addElements();
     }
     
     public function externalId()
@@ -47,7 +45,6 @@ class ApiImport_ResponseAdapter_Omeka_ItemTypeAdapter extends ApiImport_Response
                 $localElements[] = $element;
             } 
         }
-        
         $this->record->addElements($localElements);
     }
 }

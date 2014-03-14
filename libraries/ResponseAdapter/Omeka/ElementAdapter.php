@@ -26,8 +26,12 @@ class ApiImport_ResponseAdapter_Omeka_ElementAdapter extends ApiImport_ResponseA
         if( ($this->record->exists() && get_option('api_import_override_element_set_data')) || !$this->record->exists()) {
             $this->record->description = $this->responseData['description'];
             $this->record->name = $this->responseData['name'];
+            if($this->responseData['name'] == 'Language') {
+                debug('Language!');
+            }
             $this->record->element_set_id = $localElementSet->id;
             $this->record->order = $this->responseData['order'];
+            $this->record->comment = $this->responseData['comment'];
         }
         
         try {

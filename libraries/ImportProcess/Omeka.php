@@ -25,9 +25,9 @@ class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
         $this->omeka->setKey($this->key);
         $this->getAvailableResources();
         $importableResources = array(
-          //      'element_sets'     => 'ApiImport_ResponseAdapter_Omeka_ElementSetAdapter',
-          //      'elements'         => 'ApiImport_ResponseAdapter_Omeka_ElementAdapter',
-          //      'item_types'       => 'ApiImport_ResponseAdapter_Omeka_ItemTypeAdapter',
+                'element_sets'     => 'ApiImport_ResponseAdapter_Omeka_ElementSetAdapter',
+                'elements'         => 'ApiImport_ResponseAdapter_Omeka_ElementAdapter',
+                'item_types'       => 'ApiImport_ResponseAdapter_Omeka_ItemTypeAdapter',
                 'collections'      => 'ApiImport_ResponseAdapter_Omeka_CollectionAdapter',
                 'items'            => 'ApiImport_ResponseAdapter_Omeka_ItemAdapter'
                 );
