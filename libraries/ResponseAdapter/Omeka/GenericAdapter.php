@@ -23,14 +23,15 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
     {
         if(! $this->record) {
             $this->record = new $this->recordType;
-            $this->setFromResponseData();
-            try {
-                $this->record->save(true);
-                $this->addApiRecordIdMap();
-            } catch (Exception $e) {
-                _log($e);
-            }
         }
+        $this->setFromResponseData();
+        try {
+            $this->record->save(true);
+            $this->addApiRecordIdMap();
+        } catch (Exception $e) {
+            _log($e);
+        }
+        return $this->record;
     }
     
     public function setResourceProperties($resourceProperties)
@@ -58,7 +59,11 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
         $allSkipProperties = array_merge($this->resourceProperties, $this->userProperties, $this->skipProperties);
         foreach($this->responseData as $key=>$value) {
             if(!in_array($key, $allSkipProperties)) {
-                $this->record->$key = $value;
+                if(is_array($value)) {
+                    $this->record->$key = json_encode($value);
+                } else {
+                    $this->record->$key = $value;    
+                }
             }
             if(in_array($key, $this->userProperties)) {
                 $prop = $key . '_id';

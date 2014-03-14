@@ -89,11 +89,11 @@ abstract class ApiImport_ResponseAdapter_RecordAdapterAbstract implements ApiImp
         }
         
         if(is_null($this->recordType)) {
-            throw new Api_Import_RecordAdapterException(__("Record adapters must declare a record type"));
+            throw new ApiImport_ResponseAdapter_RecordAdapterException(__("Record adapters must declare a record type"));
         }
         
         if($this->record && (get_class($this->record) != $this->recordType)) {
-            throw new Api_Import_RecordAdapterException(__("Declared adapter record type must match local record type"));
+            throw new ApiImport_ResponseAdapter_RecordAdapterException(__("Declared adapter record type must match local record type"));
         }
     }
 }
