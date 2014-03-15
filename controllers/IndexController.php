@@ -4,6 +4,8 @@ class ApiImport_IndexController extends Omeka_Controller_AbstractActionControlle
 
     public function indexAction()
     {
+        $apiMapTable = $this->_helper->db->getTable('ApiRecordIdMap');
+        $urls = $apiMapTable->getImportedEndpoints();
         if(isset($_POST['submit'])) {
             set_option('api_import_override_element_set_data', $_POST['api_import_override_element_set_data']);
             if(!empty($_POST['api_url'])) {
@@ -26,7 +28,7 @@ class ApiImport_IndexController extends Omeka_Controller_AbstractActionControlle
                                                       ), 1
                                                 );
         $this->view->process = $process[0];
-        $apiMapTable = $this->_helper->db->getTable('ApiRecordIdMap'); 
+        //reget the imported urls in case the submit deleted some
         $urls = $apiMapTable->getImportedEndpoints();
         $this->view->urls = $urls;
     }

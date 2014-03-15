@@ -82,7 +82,7 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
                 if(is_array($value)) {
                     $this->record->$key = json_encode($value);
                 } else {
-                    $this->record->$key = $value;    
+                    $this->record->$key = $value;
                 }
             }
             if(in_array($key, $this->userProperties)) {
@@ -127,8 +127,12 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
                 $adapter->import();
                 return $adapter->record->id;
             } else {
-                _log($response->getMessage(), Zend_Log::INFO);
+                _log(__("Failed importing user. Falling back to current user") . " " . $response->getStatus(). " " . $response->getMessage(), Zend_Log::INFO);
+                //fallback to the user doing the import owning the record
+                return current_user()->id;
             }
+            _log(__("Failed looking up user. Falling back to current user."));
+            return current_user()->id;
         }
     }
 }

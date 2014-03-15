@@ -32,7 +32,7 @@ class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
                 'items'            => 'ApiImport_ResponseAdapter_Omeka_ItemAdapter'
                 );
 
-        $filterArgs = array('endpointUri' => $this->endpointUri, 'omeka_service' => $this->service );
+        $filterArgs = array('endpointUri' => $this->endpointUri, 'omeka_service' => $this->omeka );
         $importableResources = apply_filters('api_import_omeka_adapters', $importableResources, $filterArgs);
         foreach($importableResources as $resource=>$adapter) {
             if(in_array($resource, $this->availableResources)) {
