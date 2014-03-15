@@ -45,7 +45,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
                 $adapter->import();
                 $item->owner_id = $adapter->record->id;
             } else {
-                _log($response->getMessage(), Zend_Log::INFO);
+                _log(__("Attempting User import") . " " . $response->getStatus() . ": " . $response->getMessage(), Zend_Log::INFO);
             }
         }
         $item->save();

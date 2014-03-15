@@ -64,7 +64,7 @@ class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
                     $adapter->import();
                 }
             } else {
-                _log($response->getMessage());
+                _log($response->getStatus() . ": " . $response->getMessage());
             }
             $page++;
             usleep(1000);
