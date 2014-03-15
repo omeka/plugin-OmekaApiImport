@@ -14,8 +14,7 @@ class ApiRecordIdMap extends Omeka_Record_AbstractRecord
             $record = $this->getDb()->getTable($this->record_type)->find($this->local_id);
             if($record) {
                 $record->delete();
-            }            
+            }
         }
-
     }
 }

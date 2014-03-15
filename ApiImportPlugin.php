@@ -22,7 +22,7 @@ class ApiImportPlugin extends Omeka_Plugin_AbstractPlugin
             CREATE TABLE IF NOT EXISTS `$db->ApiRecordIdMap` (
               `id` int(11) NOT NULL AUTO_INCREMENT,
               `local_id` int(11) NOT NULL,
-              `record_type` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+              `record_type` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
               `external_id` int(11) NOT NULL,
               `endpoint_uri` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
               PRIMARY KEY (`id`),
@@ -54,7 +54,7 @@ class ApiImportPlugin extends Omeka_Plugin_AbstractPlugin
                                                                            'record_type' => get_class($record)));
         if(!empty($apiRecordMap)) {
             $apiRecordMap = $apiRecordMap[0];
-            $apiRecordMap->delete();            
+            $apiRecordMap->delete();
         }
 
     }

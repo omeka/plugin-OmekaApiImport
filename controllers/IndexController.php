@@ -4,6 +4,13 @@ class ApiImport_IndexController extends Omeka_Controller_AbstractActionControlle
 
     public function indexAction()
     {
+        $process = $this->_helper->db->getTable('Process')
+                                        ->findBy(array('class' => 'ApiImport_ImportProcess_Omeka',
+                                                       'sort_field' => 'id',
+                                                       'sort_dir' => 'd'
+                                                      ), 1
+                                                );
+        $this->view->process = $process[0];
         $apiMapTable = $this->_helper->db->getTable('ApiRecordIdMap'); 
         $urls = $apiMapTable->getImportedEndpoints();
         $this->view->urls = $urls;
