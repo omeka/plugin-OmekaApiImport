@@ -10,7 +10,9 @@ $url = $args['endpointUri'];
 <h2><?php echo __("Most recent import"); ?></h2>
 <p><?php echo __("Started %s", $process->started); ?></p>
 <p><?php echo __("API Url"); ?>: <?php echo $url; ?></p>
-<p><?php echo __("Status"); ?>: <?php echo __('%s', $process->status); ?></p>
+<p><?php echo __("Status"); ?>: <?php echo __('%s', $process->status); ?>
+
+<a href=""><?php echo __("Click here to update status.");?></a></p>
 <?php endif;?>
 
 <form method='post'>
@@ -47,7 +49,7 @@ $url = $args['endpointUri'];
         <label for='api_import_override_element_set_data'><?php echo __('Override Element Set data?'); ?></label>
     </div>
     <div class="inputs five columns omega">
-        <p class="explanation"></p>
+        <p class="explanation"><?php echo __("Checking this box will overwrite your local information about Element comments, Item Type descriptions, and Element Set descriptions."); ?></p>
         <div class="input-block">
             <?php echo $this->formCheckbox('api_import_override_element_set_data',
                  get_option('api_import_override_element_set_data'),
@@ -62,7 +64,7 @@ $url = $args['endpointUri'];
 
 <div class="field">
     <div class="two columns alpha">
-        <label></label>
+        <label><?php echo __('Undo previous imports'); ?></label>
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"></p>
