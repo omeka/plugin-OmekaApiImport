@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * A generic adapter for taking responses from an Omeka API endpoint and inserting/updating a record
+ * If the response data is flat, or only goes down to Omeka a record or a user, this works for most
+ * plugins' data. Processing that requires more following-your-nose through the response data
+ * calls for its own adapter
+ *
+ */
 class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseAdapter_RecordAdapterAbstract
                                   implements ApiImport_ResponseAdapter_RecordAdapterInterface
 {
@@ -17,6 +24,11 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
      * @var array
      */
     protected $resourceProperties = array();
+    
+    /**
+     * Properties in the response to ignore when setting record data from the response
+     * @var array
+     */
     protected $skipProperties = array('id', 'external_resources', 'url');
     
     public function import()
@@ -52,8 +64,16 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
     public function externalId()
     {
         return $this->responseData['id'];
-    }    
+    }
     
+    /**
+     * Sets data for a record from the JSON response from on Omeka API
+     * 
+     * Array values for a property are json encoded, unless they are marked for skipping as
+     * resource properties (e.g. 'item: {}') or user properties (e.g. 'owner: {}' or 'modified_by: {}')
+     * Slightly more complex processing can usually be handled by some preprocessing of the responseData
+     * before passing it in.
+     */
     protected function setFromResponseData()
     {
         $allSkipProperties = array_merge($this->resourceProperties, $this->userProperties, $this->skipProperties);
@@ -76,6 +96,11 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
         }
     }
     
+    /**
+     * Dig up a local record ID based on data about the remote resource
+     * @param array $resourceData
+     * @param string $type The record type in Omeka
+     */
     protected function getLocalResourceId($resourceData, $type)
     {
         $remoteId = $resourceData['id'];
@@ -83,6 +108,11 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
         return $localRecord->id;
     }
     
+    /**
+     * Try to dig up or import a local user id corresponding to remote user data
+     * 
+     * @param array $userData
+     */
     protected function getLocalUserId($userData)
     {
         $userId = $userData['id'];

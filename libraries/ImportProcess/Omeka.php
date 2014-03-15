@@ -42,6 +42,13 @@ class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
         _log("Done Importing", Zend_Log::INFO);
     }
 
+    /**
+     * Go through the registers adapters for resources and do the import
+     * 
+     * @param string $resource The API resource that the adapter will import
+     * @param mixed $adapter String or subclass of ApiImport_ResponseAdapter_RecordAdapterAbstract. If string, 
+     * the name of such a subclass
+     */
     protected function importRecords($resource, $adapter)
     {
         if(is_string($adapter)) {
@@ -67,10 +74,14 @@ class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
                 _log($response->getStatus() . ": " . $response->getMessage());
             }
             $page++;
+            //sleep for a little while so we don't look like we're DoS attacking
             usleep(1000);
         } while ( $this->hasNextPage($response));
     }
 
+    /**
+     * Check what resources the remote Omeka API exposes
+     */
     protected function getAvailableResources()
     {
         $response = $this->omeka->resources->get();

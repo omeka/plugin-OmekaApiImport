@@ -1,9 +1,5 @@
 <?php
-
-
-
-
-echo head(array('title' => "Import an Omeka Site"));
+    echo head(array('title' => "Import an Omeka Site"));
 ?>
 
 <?php if(isset($process)): ?>
@@ -12,9 +8,9 @@ $args = unserialize($process->args);
 $url = $args['endpointUri'];
 ?>
 <h2><?php echo __("Most recent import"); ?></h2>
-<p><?php echo __("Started: %s", $process->started); ?></p>
-<p><?php echo __("API Url:"); ?> <?php echo $url; ?></p>
-<p>Status: <?php echo __('%s', $process->status); ?></p>
+<p><?php echo __("Started %s", $process->started); ?></p>
+<p><?php echo __("API Url"); ?>: <?php echo $url; ?></p>
+<p><?php echo __("Status"); ?>: <?php echo __('%s', $process->status); ?></p>
 <?php endif;?>
 
 <form method='post'>
@@ -76,7 +72,6 @@ $url = $args['endpointUri'];
                 <input name='undo[]' value='<?php echo $index; ?>' type='checkbox' /> <span class='url'><?php echo $url; ?></span>
             </div>
         <?php endforeach; ?>
-        <?php // echo $this->formMultiCheckbox('undo', null, null, $urls); ?>
         </div>
     </div>
 </div>

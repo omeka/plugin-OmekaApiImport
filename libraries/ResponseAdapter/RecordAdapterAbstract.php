@@ -1,14 +1,31 @@
 <?php
 
+/**
+ * Class for taking a response from some API and turning it into data to insert for an Omeka Record
+ * 
+ *
+ */
+
 abstract class ApiImport_ResponseAdapter_RecordAdapterAbstract implements ApiImport_ResponseAdapter_RecordAdapterInterface
 {
     protected $responseData;
     protected $record;
     protected $recordType;
     protected $endpointUri;
+
+    /**
+     * Injection of a class service doing the remote data-gathering. One of these typically passes in the $responseData
+     * @var unknown_type
+     */
     protected $service;
     protected $db;
 
+    /**
+     * 
+     * @param mixed $responseData Data from an API response, typically JSON, XML, RDF, whatevs
+     * @param string $endpointUri The API endpoint being used
+     * @param string $recordType The Omeka record type being inserted/updated
+     */
     public function __construct($responseData, $endpointUri, $recordType = null)
     {
         $this->construct($responseData, $endpointUri, $recordType);

@@ -8,6 +8,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
     
     public function import()
     {
+        //grab the data needed for using update_item or insert_item
         $elementTexts = $this->elementTexts();
         $itemMetadata = $this->itemMetadata();
         //avoid accidental duplications
@@ -23,6 +24,9 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
         }
         
         //import files after the item is there, so the file has an item id to use
+        //we're also keeping track of the correspondences between local and remote
+        //file ids, so we have to introduce this little inefficiency of not passing
+        //the file data
         $this->importFiles($this->record);
     }
 
@@ -30,7 +34,13 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
     {
         return $this->responseData['id'];
     }
-    
+   
+    /**
+     * Try to map a correspondence between the local and remote owners. Requires that a key with
+     * sufficient permission to the API is given
+     * 
+     * @param Item $item
+     */
     protected function updateItemOwner($item)
     {
         $ownerId = $this->responseData['owner']['id'];
@@ -51,6 +61,10 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
         $item->save();
     }
     
+    /**
+     * Process the element text data
+     * @param array $responseData
+     */
     protected function elementTexts($responseData = null)
     {
         $elementTexts = array();
@@ -70,6 +84,9 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
         return $elementTexts;
     }
 
+    /**
+     * Parse out the item metadata for import/update_item
+     */
     protected function itemMetadata()
     {
         $metadata = array();
@@ -127,10 +144,15 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             $map->local_id = $fileRecord->id;
             $map->external_id = $fileData['externalId'];
             $map->endpoint_uri = $this->endpointUri;
-            $map->save();  
+            $map->save();
         }
     }
     
+    /**
+     * Parse out and query the data about files for Omeka_File_Ingest_AbstractIngest::factory
+     * 
+     * @return array File data for the file ingester
+     */
     protected function files()
     {
         $files = array();
