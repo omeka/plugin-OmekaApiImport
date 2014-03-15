@@ -32,19 +32,8 @@ class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
                 'items'            => 'ApiImport_ResponseAdapter_Omeka_ItemAdapter'
                 );
 
-        $simplePagesAdapter = new ApiImport_ResponseAdapter_Omeka_GenericAdapter(null, $this->endpointUri, 'SimplePagesPage');
-        $simplePagesAdapter->setUserProperties(array('modified_by_user', 'created_by_user'));
-        $importableResources['simple_pages'] = $simplePagesAdapter;
-        
-        $geolocationAdapter = new ApiImport_ResponseAdapter_Omeka_GenericAdapter(null, $this->endpointUri, 'Location');
-        $geolocationAdapter->setResourceProperties(array('item' => 'Item'));
-        $importableResources['geolocations'] = $geolocationAdapter;
-
-        $exhibitsAdapter = new ApiImport_ResponseAdapter_Omeka_GenericAdapter(null, $this->endpointUri, 'Exhibit');
-        $exhibitsAdapter->setUserProperties(array('owner'));
-        $importableResources['exhibits'] = $exhibitsAdapter;
-        $importableResources['exhibit_pages'] = 'ApiImport_ResponseAdapter_Omeka_ExhibitPageAdapter';
-        
+        $filterArgs = array('endpointUri' => $this->endpointUri, 'omeka_service' => $this->service );
+        $importableResources = apply_filters('api_import_omeka_adapters', $importableResources, $filterArgs);
         foreach($importableResources as $resource=>$adapter) {
             if(in_array($resource, $this->availableResources)) {
                 $this->importRecords($resource, $adapter);
@@ -56,7 +45,6 @@ class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
     protected function importRecords($resource, $adapter)
     {
         if(is_string($adapter)) {
-            debug($adapter);
             try {
                 $adapter = new $adapter(null, $this->endpointUri);
             } catch(Exception $e) {
