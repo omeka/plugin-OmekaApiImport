@@ -72,7 +72,9 @@ $url = $args['endpointUri'];
         <p class="explanation"></p>
         <div class="input-block">
         <?php foreach($urls as $index=>$url): ?>
-        <input name='undo[]' value='<?php echo $index; ?>' type='checkbox' /> <span class='url'><?php echo $url; ?></span>
+            <div>
+                <input name='undo[]' value='<?php echo $index; ?>' type='checkbox' /> <span class='url'><?php echo $url; ?></span>
+            </div>
         <?php endforeach; ?>
         <?php // echo $this->formMultiCheckbox('undo', null, null, $urls); ?>
         </div>
