@@ -120,7 +120,11 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
         if($localUser) {
             return $localUser->id;
         } else {
-            $response = $this->service->users->get($userId);
+            try {
+                $response = $this->service->users->get($userId);    
+            } catch(Exception $e) {
+                _log($e);
+            }
             if($response->getStatus() == 200) {
                 $responseData = json_decode($response->getBody(), true);
                 $adapter = new ApiImport_ResponseAdapter_Omeka_UserAdapter($responseData, $this->endpointUri);

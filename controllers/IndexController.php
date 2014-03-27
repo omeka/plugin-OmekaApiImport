@@ -10,7 +10,11 @@ class ApiImport_IndexController extends Omeka_Controller_AbstractActionControlle
             set_option('api_import_override_element_set_data', $_POST['api_import_override_element_set_data']);
             if(!empty($_POST['api_url'])) {
                 $args = array('endpointUri' => $_POST['api_url'], 'key' => $_POST['key']);
-                $process = Omeka_Job_Process_Dispatcher::startProcess('ApiImport_ImportProcess_Omeka', null, $args);
+                try {
+                    $process = Omeka_Job_Process_Dispatcher::startProcess('ApiImport_ImportProcess_Omeka', null, $args);
+                } catch(Exception $e) {
+                    _log($e);
+                }
             }
             if(isset($_POST['undo'])) {
                 foreach($_POST['undo'] as $endpointIndex) {
@@ -27,7 +31,9 @@ class ApiImport_IndexController extends Omeka_Controller_AbstractActionControlle
                                                        'sort_dir' => 'd'
                                                       ), 1
                                                 );
-        $this->view->process = $process[0];
+        if(!empty($process)) {
+            $this->view->process = $process[0];
+        }
         //reget the imported urls in case the submit deleted some
         $urls = $apiMapTable->getImportedEndpoints();
         $this->view->urls = $urls;
