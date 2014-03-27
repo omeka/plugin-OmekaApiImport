@@ -2,6 +2,7 @@
     echo head(array('title' => "Import an Omeka Site"));
 ?>
 
+<?php echo flash(); ?>
 <?php if(isset($process)): ?>
 <?php 
 $args = unserialize($process->args);
