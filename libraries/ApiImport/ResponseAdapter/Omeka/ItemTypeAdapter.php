@@ -1,10 +1,9 @@
 <?php
-class ApiImport_ResponseAdapter_Omeka_ItemTypeAdapter extends ApiImport_ResponseAdapter_RecordAdapterAbstract
-                                  implements ApiImport_ResponseAdapter_RecordAdapterInterface
+class ApiImport_ResponseAdapter_Omeka_ItemTypeAdapter extends ApiImport_ResponseAdapter_AbstractRecordAdapter
 {
 
     protected $recordType = 'ItemType';
-    
+
     public function import()
     {
         //look for a local record, first by whether it's been imported, which is done in construct,
@@ -12,7 +11,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemTypeAdapter extends ApiImport_Response
         if(!$this->record) {
             $this->record = $this->db->getTable('ItemType')->findByName($this->responseData['name']);
         }
-        
+
         if(!$this->record) {
             $this->record = new ItemType;
         }
@@ -29,12 +28,12 @@ class ApiImport_ResponseAdapter_Omeka_ItemTypeAdapter extends ApiImport_Response
             _log($e);
         }
     }
-    
+
     public function externalId()
     {
         return $this->responseData['id'];
     }
-    
+
     protected function addElements()
     {
         $mapTable = $this->db->getTable('ApiRecordIdMap');
@@ -43,7 +42,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemTypeAdapter extends ApiImport_Response
             $element = $mapTable->localRecord('Element', $elementData['id'], $this->endpointUri);
             if($element) {
                 $localElements[] = $element;
-            } 
+            }
         }
         $this->record->addElements($localElements);
     }

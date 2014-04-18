@@ -16,16 +16,16 @@ class ApiImport_IndexController extends Omeka_Controller_AbstractActionControlle
 
                 if(isset($response['message'])) {
                     $this->_helper->flashMessenger(__("The API at %s is not active", $_POST['api_url']), 'error');
-                    
+
                 } else {
                     $args = array('endpointUri' => $_POST['api_url'], 'key' => $_POST['key']);
                     try {
-                        $process = Omeka_Job_Process_Dispatcher::startProcess('ApiImport_ImportProcess_Omeka', null, $args);
+                        Zend_Registry::get('bootstrap')->getResource('jobs')
+                            ->sendLongRunning('ApiImport_ImportJob_Omeka', $args);
                     } catch(Exception $e) {
                         _log($e);
-                    }                    
+                    }
                 }
-
             }
             if(isset($_POST['undo'])) {
                 foreach($_POST['undo'] as $endpointIndex) {
@@ -37,7 +37,7 @@ class ApiImport_IndexController extends Omeka_Controller_AbstractActionControlle
             }
         }
         $process = $this->_helper->db->getTable('Process')
-                                        ->findBy(array('class' => 'ApiImport_ImportProcess_Omeka',
+                                        ->findBy(array(
                                                        'sort_field' => 'id',
                                                        'sort_dir' => 'd'
                                                       ), 1

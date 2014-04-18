@@ -1,18 +1,17 @@
 <?php
 
-class ApiImport_ResponseAdapter_Omeka_UserAdapter extends ApiImport_ResponseAdapter_RecordAdapterAbstract
-                                  implements ApiImport_ResponseAdapter_RecordAdapterInterface
+class ApiImport_ResponseAdapter_Omeka_UserAdapter extends ApiImport_ResponseAdapter_AbstractRecordAdapter
 {
-    
+
     protected $recordType = 'User';
-    
+
     public function import()
     {
         if($this->record && $this->record->exists()) {
             //already mapped
             return;
         }
-        
+
         //try by email address
         if($user = $this->db->getTable('User')->findByEmail($this->responseData['email']) ) {
             $this->record = $user;
@@ -31,7 +30,7 @@ class ApiImport_ResponseAdapter_Omeka_UserAdapter extends ApiImport_ResponseAdap
             }
         }
     }
-    
+
     public function externalId()
     {
         return $this->responseData['id'];

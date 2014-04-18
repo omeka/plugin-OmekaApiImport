@@ -1,27 +1,18 @@
 <?php
 
 
-class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
+class ApiImport_ImportJob_Omeka extends Omeka_Job_AbstractJob
 {
-    protected $endpointUri;
-    protected $key;
     protected $omeka;
     protected $availableResources;
+    protected $endpointUri;
+    protected $key;
 
-    public function run($args)
+    public function perform()
     {
         _log("Beginning Import", Zend_Log::INFO);
-        require_once( PLUGIN_DIR . '/ApiImport/libraries/ResponseAdapter/RecordAdapterInterface.php');
-        require_once( PLUGIN_DIR . '/ApiImport/libraries/ResponseAdapter/RecordAdapterAbstract.php');
-        require_once( PLUGIN_DIR . '/ApiImport/libraries/ZendService_Omeka/Omeka.php');
-        
-        foreach( glob(PLUGIN_DIR . "/ApiImport/libraries/ResponseAdapter/Omeka/*.php") as $adapterClass) {
-            include($adapterClass);
-        }        
-        
-        $this->endpointUri = $args['endpointUri'];
-        $this->key = $args['key'];
-        $this->omeka = new Zend_Service_Omeka($this->endpointUri);
+        debug($this->endpointUri);
+        $this->omeka = new ApiImport_Service_Omeka($this->endpointUri);
         $this->omeka->setKey($this->key);
         $this->getAvailableResources();
         $importableResources = array(
@@ -41,16 +32,27 @@ class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
         }
         _log("Done Importing", Zend_Log::INFO);
     }
+    
+    public function setKey($key)
+    {
+        $this->key = $key;
+    }
+    
+    public function setEndpointUri($endpointUri)
+    {
+        $this->endpointUri = $endpointUri;
+    }
 
     /**
      * Go through the registers adapters for resources and do the import
-     * 
+     *
      * @param string $resource The API resource that the adapter will import
-     * @param mixed $adapter String or subclass of ApiImport_ResponseAdapter_RecordAdapterAbstract. If string, 
+     * @param mixed $adapter String or subclass of ApiImport_ResponseAdapter_RecordAdapterAbstract. If string,
      * the name of such a subclass
      */
     protected function importRecords($resource, $adapter)
     {
+        debug(get_class($adapter) . ' ' . $resource);
         if(is_string($adapter)) {
             try {
                 $adapter = new $adapter(null, $this->endpointUri);
@@ -90,7 +92,7 @@ class ApiImport_ImportProcess_Omeka extends Omeka_Job_Process_AbstractProcess
             $this->availableResources = array_keys($json);
         }
     }
-    
+
     protected function hasNextPage($response)
     {
         $linksHeading = $response->getHeader('Link');

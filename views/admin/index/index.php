@@ -6,7 +6,8 @@
 <?php if(isset($process)): ?>
 <?php 
 $args = unserialize($process->args);
-$url = $args['endpointUri'];
+$job = json_decode($args['job'], true);
+$url = $job['options']['endpointUri'];
 ?>
 <h2><?php echo __("Most recent import"); ?></h2>
 <p><?php echo __("Started %s", $process->started); ?></p>

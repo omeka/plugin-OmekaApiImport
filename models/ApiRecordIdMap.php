@@ -11,9 +11,11 @@ class ApiRecordIdMap extends Omeka_Record_AbstractRecord
     {
         $skipTypes = array('File', 'Element', 'ElementSet', 'ItemType');
         if(! in_array($this->record_type, $skipTypes)) {
-            $record = $this->getDb()->getTable($this->record_type)->find($this->local_id);
-            if($record) {
-                $record->delete();
+            if(class_exists($this->record_type)) {
+                $record = $this->getDb()->getTable($this->record_type)->find($this->local_id);
+                if($record) {
+                    $record->delete();
+                }
             }
         }
     }

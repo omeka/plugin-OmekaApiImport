@@ -1,11 +1,10 @@
 <?php
 
-class ApiImport_ResponseAdapter_Omeka_ElementSetAdapter extends ApiImport_ResponseAdapter_RecordAdapterAbstract
-                                  implements ApiImport_ResponseAdapter_RecordAdapterInterface
+class ApiImport_ResponseAdapter_Omeka_ElementSetAdapter extends ApiImport_ResponseAdapter_AbstractRecordAdapter
 {
 
     protected $recordType = 'ElementSet';
-    
+
     public function import()
     {
         //look for a local record, first by whether it's been imported, which is done in construct,
@@ -13,7 +12,7 @@ class ApiImport_ResponseAdapter_Omeka_ElementSetAdapter extends ApiImport_Respon
         if(!$this->record) {
             $this->record = $this->db->getTable('ElementSet')->findByName($this->responseData['name']);
         }
-        
+
         if(!$this->record) {
             $this->record = new ElementSet;
         }
@@ -23,7 +22,7 @@ class ApiImport_ResponseAdapter_Omeka_ElementSetAdapter extends ApiImport_Respon
             $this->record->name = $this->responseData['name'];
             $this->record->record_type = $this->responseData['record_type'];
         }
-        
+
         try {
             $this->record->save(true);
             $this->addApiRecordIdMap();
@@ -31,7 +30,7 @@ class ApiImport_ResponseAdapter_Omeka_ElementSetAdapter extends ApiImport_Respon
             _log($e);
         }
     }
-    
+
     public function externalId()
     {
         return $this->responseData['id'];

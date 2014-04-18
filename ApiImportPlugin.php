@@ -6,15 +6,7 @@ class ApiImportPlugin extends Omeka_Plugin_AbstractPlugin
 {
     protected $_hooks = array('install', 'uninstall', 'after_delete_record');
     protected $_filters = array('admin_navigation_main');
-    
-    public function setUp()
-    {
-        parent::setUp();
-        foreach(glob(PLUGIN_DIR . '/ApiImport/libraries/ImportProcess/*') as $processClass) {
-            include_once($processClass);
-        }
-    }
-    
+
     public function hookInstall()
     {
         $db = get_db();
@@ -31,14 +23,14 @@ class ApiImportPlugin extends Omeka_Plugin_AbstractPlugin
         ";
         $db->query($sql);
     }
-    
+
     public function hookUninstall()
     {
         $db = get_db();
         $sql = "DROP TABLE IF EXISTS `$db->ApiRecordIdMap`";
         $db->query($sql);
     }
-    
+
     public function filterAdminNavigationMain($nav)
     {
         $nav[] = array('label' => __('Omeka Import'),
@@ -46,11 +38,11 @@ class ApiImportPlugin extends Omeka_Plugin_AbstractPlugin
                 );
         return $nav;
     }
-    
+
     public function hookAfterDeleteRecord($args)
     {
         $record = $args['record'];
-        $apiRecordMap = get_db()->getTable('ApiRecordIdMap')->findBy(array('local_id' => $record->id, 
+        $apiRecordMap = get_db()->getTable('ApiRecordIdMap')->findBy(array('local_id' => $record->id,
                                                                            'record_type' => get_class($record)));
         if(!empty($apiRecordMap)) {
             $apiRecordMap = $apiRecordMap[0];

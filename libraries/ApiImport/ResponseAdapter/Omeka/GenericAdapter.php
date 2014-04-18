@@ -7,8 +7,7 @@
  * calls for its own adapter
  *
  */
-class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseAdapter_RecordAdapterAbstract
-                                  implements ApiImport_ResponseAdapter_RecordAdapterInterface
+class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseAdapter_AbstractRecordAdapter
 {
     /**
      * Properties in the API that refer to users should be added to $userProperties
@@ -16,7 +15,7 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
      * @var array
      */
     protected $userProperties = array();
-    
+
     /**
      * Properties that refer to resources such as items should be added to $resourceProperties
      * so the import can look up the correct referent. Assumes that referents are already imported
@@ -24,13 +23,13 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
      * @var array
      */
     protected $resourceProperties = array();
-    
+
     /**
      * Properties in the response to ignore when setting record data from the response
      * @var array
      */
     protected $skipProperties = array('id', 'external_resources', 'url');
-    
+
     public function import()
     {
         if(! $this->record) {
@@ -45,30 +44,30 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
         }
         return $this->record;
     }
-    
+
     public function setResourceProperties($resourceProperties)
     {
         $this->resourceProperties = $resourceProperties;
     }
-    
+
     public function setUserProperties($userProperties)
     {
         $this->userProperties = $userProperties;
     }
-    
+
     public function addSkipProperty($property)
     {
         $this->skipProperties[] = $property;
     }
-    
+
     public function externalId()
     {
         return $this->responseData['id'];
     }
-    
+
     /**
      * Sets data for a record from the JSON response from on Omeka API
-     * 
+     *
      * Array values for a property are json encoded, unless they are marked for skipping as
      * resource properties (e.g. 'item: {}') or user properties (e.g. 'owner: {}' or 'modified_by: {}')
      * Slightly more complex processing can usually be handled by some preprocessing of the responseData
@@ -95,7 +94,7 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
             }
         }
     }
-    
+
     /**
      * Dig up a local record ID based on data about the remote resource
      * @param array $resourceData
@@ -107,10 +106,10 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
         $localRecord = $this->db->getTable('ApiRecordIdMap')->localRecord($type, $remoteId, $this->endpointUri);
         return $localRecord->id;
     }
-    
+
     /**
      * Try to dig up or import a local user id corresponding to remote user data
-     * 
+     *
      * @param array $userData
      */
     protected function getLocalUserId($userData)
@@ -121,7 +120,7 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
             return $localUser->id;
         } else {
             try {
-                $response = $this->service->users->get($userId);    
+                $response = $this->service->users->get($userId);
             } catch(Exception $e) {
                 _log($e);
             }

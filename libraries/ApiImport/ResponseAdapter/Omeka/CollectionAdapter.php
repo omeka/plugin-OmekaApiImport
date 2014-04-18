@@ -1,7 +1,6 @@
 <?php
 
-class ApiImport_ResponseAdapter_Omeka_CollectionAdapter extends ApiImport_ResponseAdapter_RecordAdapterAbstract
-                                  implements ApiImport_ResponseAdapter_RecordAdapterInterface
+class ApiImport_ResponseAdapter_Omeka_CollectionAdapter extends ApiImport_ResponseAdapter_AbstractRecordAdapter
 {
     protected $recordType = 'Collection';
 
@@ -49,14 +48,14 @@ class ApiImport_ResponseAdapter_Omeka_CollectionAdapter extends ApiImport_Respon
         $metadata['featured'] = $this->responseData['featured'];
         return $metadata;
     }
-    
+
     protected function elementTexts($responseData = null)
     {
         $elementTexts = array();
         if(!$responseData) {
             $responseData = $this->responseData;
         }
-        
+
         foreach($responseData['element_texts'] as $elTextData) {
             $elName = $elTextData['element']['name'];
             $elSet = $elTextData['element_set']['name'];
@@ -64,9 +63,9 @@ class ApiImport_ResponseAdapter_Omeka_CollectionAdapter extends ApiImport_Respon
                                        'html' => $elTextData['html']
                                        );
             $elementTexts[$elSet][$elName][] = $elTextInsertArray;
-            
+
         }
         return $elementTexts;
-    }    
-    
+    }
+
 }

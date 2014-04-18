@@ -2,11 +2,11 @@
 
 /**
  * Class for taking a response from some API and turning it into data to insert for an Omeka Record
- * 
+ *
  *
  */
 
-abstract class ApiImport_ResponseAdapter_RecordAdapterAbstract implements ApiImport_ResponseAdapter_RecordAdapterInterface
+abstract class ApiImport_ResponseAdapter_AbstractRecordAdapter implements ApiImport_ResponseAdapter_RecordAdapterInterface
 {
     protected $responseData;
     protected $record;
@@ -21,7 +21,7 @@ abstract class ApiImport_ResponseAdapter_RecordAdapterAbstract implements ApiImp
     protected $db;
 
     /**
-     * 
+     *
      * @param mixed $responseData Data from an API response, typically JSON, XML, RDF, whatevs
      * @param string $endpointUri The API endpoint being used
      * @param string $recordType The Omeka record type being inserted/updated
@@ -30,10 +30,10 @@ abstract class ApiImport_ResponseAdapter_RecordAdapterAbstract implements ApiImp
     {
         $this->construct($responseData, $endpointUri, $recordType);
     }
-    
+
     public function resetResponseData($responseData)
     {
-        $this->construct($responseData, $this->endpointUri, $recordType);    
+        $this->construct($responseData, $this->endpointUri, $recordType);
     }
 
     public function setService($service)
@@ -45,7 +45,7 @@ abstract class ApiImport_ResponseAdapter_RecordAdapterAbstract implements ApiImp
     {
         return $this->service;
     }
-    
+
     /**
      * Return the local record being worked with
      *
@@ -92,7 +92,7 @@ abstract class ApiImport_ResponseAdapter_RecordAdapterAbstract implements ApiImp
         $map->endpoint_uri = $this->endpointUri;
         $map->save();
     }
-    
+
     protected function construct($responseData, $endpointUri, $recordType)
     {
         if($recordType) {
@@ -104,11 +104,11 @@ abstract class ApiImport_ResponseAdapter_RecordAdapterAbstract implements ApiImp
         if(!empty($this->responseData)) {
             $this->record = $this->localRecord();
         }
-        
+
         if(is_null($this->recordType)) {
             throw new ApiImport_ResponseAdapter_RecordAdapterException(__("Record adapters must declare a record type"));
         }
-        
+
         if($this->record && (get_class($this->record) != $this->recordType)) {
             throw new ApiImport_ResponseAdapter_RecordAdapterException(__("Declared adapter record type must match local record type"));
         }

@@ -1,11 +1,10 @@
 <?php
 
-class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdapter_RecordAdapterAbstract
-                                  implements ApiImport_ResponseAdapter_RecordAdapterInterface
+class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdapter_AbstractRecordAdapter
 {
     protected $recordType = 'Item';
     protected $service;
-    
+
     public function import()
     {
         //grab the data needed for using update_item or insert_item
@@ -22,7 +21,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             $this->updateItemOwner($this->record);
             $this->addApiRecordIdMap();
         }
-        
+
         //import files after the item is there, so the file has an item id to use
         //we're also keeping track of the correspondences between local and remote
         //file ids, so we have to introduce this little inefficiency of not passing
@@ -34,11 +33,11 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
     {
         return $this->responseData['id'];
     }
-   
+
     /**
      * Try to map a correspondence between the local and remote owners. Requires that a key with
      * sufficient permission to the API is given
-     * 
+     *
      * @param Item $item
      */
     protected function updateItemOwner($item)
@@ -60,7 +59,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
         }
         $item->save();
     }
-    
+
     /**
      * Process the element text data
      * @param array $responseData
@@ -71,7 +70,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
         if(!$responseData) {
             $responseData = $this->responseData;
         }
-        
+
         foreach($responseData['element_texts'] as $elTextData) {
             $elName = $elTextData['element']['name'];
             $elSet = $elTextData['element_set']['name'];
@@ -79,7 +78,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
                                        'html' => $elTextData['html']
                                        );
             $elementTexts[$elSet][$elName][] = $elTextInsertArray;
-            
+
         }
         return $elementTexts;
     }
@@ -115,7 +114,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             $itemTypeId = null;
         }
         $metadata['item_type_id'] = $itemTypeId;
-        
+
         $tagsArray = array();
         foreach($this->responseData['tags'] as $tagData) {
             $tagsArray[] = $tagData['name'];
@@ -132,13 +131,13 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             array()
         );
         $files = $this->files();
-        
+
         //have to step through one by one so we can save the id map for each $fileRecord and $fileData
         foreach($files as $fileData)
         {
             $fileRecords = $ingester->ingest(array($fileData));
             $item->saveFiles();
-            $fileRecord = array_pop($fileRecords);  
+            $fileRecord = array_pop($fileRecords);
             $map = new ApiRecordIdMap();
             $map->record_type = 'File';
             $map->local_id = $fileRecord->id;
@@ -147,10 +146,10 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             $map->save();
         }
     }
-    
+
     /**
      * Parse out and query the data about files for Omeka_File_Ingest_AbstractIngest::factory
-     * 
+     *
      * @return array File data for the file ingester
      */
     protected function files()
@@ -167,7 +166,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
                                 ->findExternalIdsByParams(array('record_type' =>'File',
                                                                'endpoint_uri' => $this->endpointUri
                                                          ));
-        $ids = array_keys($externalIds);    
+        $ids = array_keys($externalIds);
         foreach($responseData as $fileData) {
             if(! in_array($fileData['id'], $ids)) {
                 $files[] = array('source'   => $fileData['file_urls']['original'],

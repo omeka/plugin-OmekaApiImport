@@ -1,15 +1,14 @@
 <?php
-class ApiImport_ResponseAdapter_Omeka_ElementAdapter extends ApiImport_ResponseAdapter_RecordAdapterAbstract
-                                  implements ApiImport_ResponseAdapter_RecordAdapterInterface
+class ApiImport_ResponseAdapter_Omeka_ElementAdapter extends ApiImport_ResponseAdapter_AbstractRecordAdapter
 {
 
     protected $recordType = 'Element';
-    
+
     public function import()
     {
-        
+
         $localElementSet = $this->db->getTable('ApiRecordIdMap')
-                                        ->localRecord('ElementSet', 
+                                        ->localRecord('ElementSet',
                                                        $this->responseData['element_set']['id'],
                                                        $this->endpointUri
                                                       );
@@ -18,7 +17,7 @@ class ApiImport_ResponseAdapter_Omeka_ElementAdapter extends ApiImport_ResponseA
         if(!$this->record) {
             $this->record = $this->db->getTable('Element')->findByElementSetNameAndElementName($localElementSet->name, $this->responseData['name']);
         }
-        
+
         if(!$this->record) {
             $this->record = new Element;
         }
@@ -30,7 +29,7 @@ class ApiImport_ResponseAdapter_Omeka_ElementAdapter extends ApiImport_ResponseA
             $this->record->order = $this->responseData['order'];
             $this->record->comment = $this->responseData['comment'];
         }
-        
+
         try {
             $this->record->save(true);
             $this->addApiRecordIdMap();
@@ -38,9 +37,9 @@ class ApiImport_ResponseAdapter_Omeka_ElementAdapter extends ApiImport_ResponseA
             _log($e);
         }
     }
-    
+
     public function externalId()
     {
         return $this->responseData['id'];
-    }    
+    }
 }
