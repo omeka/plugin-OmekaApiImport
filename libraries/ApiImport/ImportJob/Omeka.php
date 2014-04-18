@@ -52,7 +52,6 @@ class ApiImport_ImportJob_Omeka extends Omeka_Job_AbstractJob
      */
     protected function importRecords($resource, $adapter)
     {
-        debug(get_class($adapter) . ' ' . $resource);
         if(is_string($adapter)) {
             try {
                 $adapter = new $adapter(null, $this->endpointUri);
@@ -77,7 +76,7 @@ class ApiImport_ImportJob_Omeka extends Omeka_Job_AbstractJob
             }
             $page++;
             //sleep for a little while so we don't look like we're DoS attacking
-            usleep(1000);
+            usleep(200);
         } while ( $this->hasNextPage($response));
     }
 
