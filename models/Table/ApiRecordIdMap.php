@@ -23,9 +23,11 @@ class Table_ApiRecordIdMap extends Omeka_Db_Table
     
     public function getImportedEndpoints()
     {
+
+        $prefix = $this->getTablePrefix();
         $sql = "
             SELECT DISTINCT `endpoint_uri`
-            FROM `omeka_api_record_id_maps`
+            FROM `{$prefix}api_record_id_maps`
             WHERE `record_type` NOT
             IN (
             'Element', 'ElementSet', 'File', 'ItemType'
