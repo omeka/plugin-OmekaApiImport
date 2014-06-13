@@ -42,8 +42,16 @@ class ApiImport_IndexController extends Omeka_Controller_AbstractActionControlle
                                                        'sort_dir' => 'd'
                                                       ), 1
                                                 );
-        if(!empty($process)) {
-            $this->view->process = $process[0];
+        if (!empty($process)) {
+            $firstProcess = $process[0];
+            $args = unserialize($firstProcess->args);
+            
+            $job = json_decode($args['job'], true);
+            if ($job['className'] == 'ApiImport_ImportJob_Omeka') {
+                $this->view->job = $job;
+                $this->view->process = $firstProcess;
+            }
+            
         }
         //reget the imported urls in case the submit deleted some
         $urls = $apiMapTable->getImportedEndpoints();

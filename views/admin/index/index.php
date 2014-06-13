@@ -3,10 +3,8 @@
 ?>
 
 <?php echo flash(); ?>
-<?php if(isset($process)): ?>
+<?php if(isset($job)): ?>
 <?php 
-$args = unserialize($process->args);
-$job = json_decode($args['job'], true);
 $url = $job['options']['endpointUri'];
 ?>
 <h2><?php echo __("Most recent import"); ?></h2>
