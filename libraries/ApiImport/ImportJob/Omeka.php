@@ -11,7 +11,6 @@ class ApiImport_ImportJob_Omeka extends Omeka_Job_AbstractJob
     public function perform()
     {
         _log("Beginning Import", Zend_Log::INFO);
-        debug($this->endpointUri);
         $this->omeka = new ApiImport_Service_Omeka($this->endpointUri);
         $this->omeka->setKey($this->key);
         $this->getAvailableResources();
