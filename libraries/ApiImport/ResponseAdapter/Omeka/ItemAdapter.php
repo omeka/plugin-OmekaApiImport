@@ -7,6 +7,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
 
     public function import()
     {
+        debug('External id: ' . $this->responseData['id']);
         //grab the data needed for using update_item or insert_item
         $elementTexts = $this->elementTexts();
         $itemMetadata = $this->itemMetadata();
@@ -82,6 +83,9 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             $elTextInsertArray = array('text' => $elTextData['text'],
                                        'html' => $elTextData['html']
                                        );
+            if (is_null($elTextInsertArray['text'])) {
+                $elTextInsertArray['text'] = '';
+            }
             $elementTexts[$elSet][$elName][] = $elTextInsertArray;
 
         }
@@ -140,7 +144,12 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
         //have to step through one by one so we can save the id map for each $fileRecord and $fileData
         foreach($files as $fileData)
         {
-            $fileRecords = $ingester->ingest(array($fileData));
+            try {
+                $fileRecords = $ingester->ingest(array($fileData));
+            } catch (Exception $e) {
+                _log($e);
+                continue;
+            }
             $item->saveFiles();
             $fileRecord = array_pop($fileRecords);
             $map = new ApiRecordIdMap();
