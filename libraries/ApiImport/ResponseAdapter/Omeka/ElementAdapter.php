@@ -26,7 +26,7 @@ class ApiImport_ResponseAdapter_Omeka_ElementAdapter extends ApiImport_ResponseA
             $this->record->description = $this->responseData['description'];
             $this->record->name = $this->responseData['name'];
             $this->record->element_set_id = $localElementSet->id;
-            $this->record->order = $this->responseData['order'];
+            $this->record->order = null;
             $this->record->comment = $this->responseData['comment'];
         }
 

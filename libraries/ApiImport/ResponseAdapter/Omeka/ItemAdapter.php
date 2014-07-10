@@ -7,7 +7,6 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
 
     public function import()
     {
-        debug('External id: ' . $this->responseData['id']);
         //grab the data needed for using update_item or insert_item
         $elementTexts = $this->elementTexts();
         $itemMetadata = $this->itemMetadata();
@@ -22,7 +21,6 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             $this->updateItemOwner($this->record);
             $this->addApiRecordIdMap();
         }
-
         //import files after the item is there, so the file has an item id to use
         //we're also keeping track of the correspondences between local and remote
         //file ids, so we have to introduce this little inefficiency of not passing
@@ -115,7 +113,6 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             }
             $metadata['collection_id'] = $collectionId;
         }
-
         $itemType = $this->responseData['item_type'] ? $this->localRecord('ItemType', $this->responseData['item_type']['id']) : null;
         if($itemType) {
             $itemTypeId = $itemType->id;
