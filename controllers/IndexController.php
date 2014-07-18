@@ -4,6 +4,12 @@ class ApiImport_IndexController extends Omeka_Controller_AbstractActionControlle
 
     public function indexAction()
     {
+        //check cli path
+        try {
+            Omeka_Job_Process_Dispatcher::getPHPCliPath();
+        } catch(RuntimeException $e) {
+            $this->_helper->flashMessenger(__("The background.php.path in config.ini is not valid. The correct path must be set for the import to work."), 'error');
+        }
         $apiMapTable = $this->_helper->db->getTable('ApiRecordIdMap');
         $urls = $apiMapTable->getImportedEndpoints();
         if(isset($_POST['submit'])) {
