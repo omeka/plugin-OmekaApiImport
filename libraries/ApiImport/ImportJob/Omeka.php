@@ -59,14 +59,15 @@ class ApiImport_ImportJob_Omeka extends Omeka_Job_AbstractJob
             }
             $adapter->setService($this->omeka);
         }
-
         $page = 1;
+        
         do {
             _log("Importing $resource page $page", Zend_Log::INFO);
             $response = $this->omeka->$resource->get(null, array('page' => $page));
             if($response->getStatus() == 200) {
                 $responseData = json_decode($response->getBody(), true);
                 foreach($responseData as $recordData) {
+                    _log("$resource ID: " . $recordData['id'], Zend_Log::INFO);
                     $adapter->resetResponseData($recordData);
                     $adapter->import();
                 }
