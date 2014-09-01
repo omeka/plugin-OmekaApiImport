@@ -7,7 +7,7 @@ class ApiImport_ResponseAdapter_Omeka_ElementAdapter extends ApiImport_ResponseA
     public function import()
     {
 
-        $localElementSet = $this->db->getTable('ApiRecordIdMap')
+        $localElementSet = $this->db->getTable('OmekaApiImportRecordIdMap')
                                         ->localRecord('ElementSet',
                                                        $this->responseData['element_set']['id'],
                                                        $this->endpointUri
@@ -22,7 +22,7 @@ class ApiImport_ResponseAdapter_Omeka_ElementAdapter extends ApiImport_ResponseA
             $this->record = new Element;
         }
         //set new value if element set exists and override is set, or if it is brand new
-        if( ($this->record->exists() && get_option('api_import_override_element_set_data')) || !$this->record->exists()) {
+        if( ($this->record->exists() && get_option('omeka_api_import_override_element_set_data')) || !$this->record->exists()) {
             $this->record->description = $this->responseData['description'];
             $this->record->name = $this->responseData['name'];
             $this->record->element_set_id = $localElementSet->id;
@@ -32,7 +32,7 @@ class ApiImport_ResponseAdapter_Omeka_ElementAdapter extends ApiImport_ResponseA
 
         try {
             $this->record->save(true);
-            $this->addApiRecordIdMap();
+            $this->addOmekaApiImportRecordIdMap();
         } catch(Exception $e) {
             _log($e);
         }

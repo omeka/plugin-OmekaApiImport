@@ -38,7 +38,7 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
         $this->setFromResponseData();
         try {
             $this->record->save(true);
-            $this->addApiRecordIdMap();
+            $this->addOmekaApiImportRecordIdMap();
         } catch (Exception $e) {
             _log($e);
         }
@@ -103,7 +103,7 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
     protected function getLocalResourceId($resourceData, $type)
     {
         $remoteId = $resourceData['id'];
-        $localRecord = $this->db->getTable('ApiRecordIdMap')->localRecord($type, $remoteId, $this->endpointUri);
+        $localRecord = $this->db->getTable('OmekaApiImportRecordIdMap')->localRecord($type, $remoteId, $this->endpointUri);
         return $localRecord->id;
     }
 
@@ -115,7 +115,7 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
     protected function getLocalUserId($userData)
     {
         $userId = $userData['id'];
-        $localUser = $this->db->getTable('ApiRecordIdMap')->localRecord('User', $userId, $this->endpointUri);
+        $localUser = $this->db->getTable('OmekaApiImportRecordIdMap')->localRecord('User', $userId, $this->endpointUri);
         if($localUser) {
             return $localUser->id;
         } else {

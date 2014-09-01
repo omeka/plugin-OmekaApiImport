@@ -1,6 +1,6 @@
 <?php
 
-class Table_ApiRecordIdMap extends Omeka_Db_Table
+class Table_OmekaApiImportRecordIdMap extends Omeka_Db_Table
 {
     public function localRecord($recordType, $externalId, $endpointUri)
     {
@@ -11,8 +11,8 @@ class Table_ApiRecordIdMap extends Omeka_Db_Table
         $select = $recordTable->getSelect();
 
         $select->join(
-                    array('api_record_id_maps' => $this->getTableName()),
-                    "api_record_id_maps.local_id = $recordTableAlias.id",
+                    array($alias => $this->getTableName()),
+                    "$alias.local_id = $recordTableAlias.id",
                     null
                 );
         $select->where("$alias.record_type = ?", $recordType);
@@ -27,7 +27,7 @@ class Table_ApiRecordIdMap extends Omeka_Db_Table
         $prefix = $this->getTablePrefix();
         $sql = "
             SELECT DISTINCT `endpoint_uri`
-            FROM `{$prefix}api_record_id_maps`
+            FROM `{$prefix}omeka_api_import_record_id_maps`
             WHERE `record_type` NOT
             IN (
             'Element', 'ElementSet', 'File', 'ItemType'

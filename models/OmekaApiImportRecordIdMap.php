@@ -1,6 +1,6 @@
 <?php
 
-class ApiRecordIdMap extends Omeka_Record_AbstractRecord
+class OmekaApiImportRecordIdMap extends Omeka_Record_AbstractRecord
 {
     public $local_id;
     public $external_id;

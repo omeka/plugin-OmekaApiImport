@@ -72,7 +72,7 @@ abstract class ApiImport_ResponseAdapter_AbstractRecordAdapter implements ApiImp
             $externalId = $this->externalId();
         }
 
-        $rec =  $this->db->getTable('ApiRecordIdMap')->localRecord($recordType, $externalId, $this->endpointUri);
+        $rec =  $this->db->getTable('OmekaApiImportRecordIdMap')->localRecord($recordType, $externalId, $this->endpointUri);
         return $rec;
     }
 
@@ -81,11 +81,11 @@ abstract class ApiImport_ResponseAdapter_AbstractRecordAdapter implements ApiImp
      *
      * @param Omeka_Record_RecordAbstract $record
      */
-    protected function addApiRecordIdMap()
+    protected function addOmekaApiImportRecordIdMap()
     {
         $recordType = get_class($this->record);
         $id = $this->externalId();
-        $map = new ApiRecordIdMap();
+        $map = new OmekaApiImportRecordIdMap();
         $map->record_type = $recordType;
         $map->local_id = $this->record->id;
         $map->external_id = $id;

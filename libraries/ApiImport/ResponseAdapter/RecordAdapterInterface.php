@@ -7,7 +7,7 @@
  * implementing this interface should use internal methods to work through
  * that response, whatever it may be.
  *
- * The insert method should make use of the addApiRecordIdMap method in RecordAdapterAbstract (or similar)
+ * The insert method should make use of the addOmekaApiImportRecordIdMap method in RecordAdapterAbstract (or similar)
  * to maintain a connection between local and external record ids
  *
  */

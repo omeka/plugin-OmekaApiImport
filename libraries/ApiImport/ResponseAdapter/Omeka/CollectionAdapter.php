@@ -21,7 +21,7 @@ class ApiImport_ResponseAdapter_Omeka_CollectionAdapter extends ApiImport_Respon
             } catch(Exception $e) {
                 _log($e);
             }
-            $this->addApiRecordIdMap();
+            $this->addOmekaApiImportRecordIdMap();
         }
     }
 

@@ -1,5 +1,5 @@
 <?php
-class ApiImport_IndexController extends Omeka_Controller_AbstractActionController
+class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionController
 {
 
     public function indexAction()
@@ -10,10 +10,10 @@ class ApiImport_IndexController extends Omeka_Controller_AbstractActionControlle
         } catch(RuntimeException $e) {
             $this->_helper->flashMessenger(__("The background.php.path in config.ini is not valid. The correct path must be set for the import to work."), 'error');
         }
-        $apiMapTable = $this->_helper->db->getTable('ApiRecordIdMap');
+        $apiMapTable = $this->_helper->db->getTable('OmekaApiImportRecordIdMap');
         $urls = $apiMapTable->getImportedEndpoints();
         if(isset($_POST['submit'])) {
-            set_option('api_import_override_element_set_data', $_POST['api_import_override_element_set_data']);
+            set_option('omeka_api_import_override_element_set_data', $_POST['omeka_api_import_override_element_set_data']);
             if(!empty($_POST['api_url'])) {
                 //do a quick check for whether the API is active
                 $client = new Zend_Http_Client;

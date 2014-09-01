@@ -19,7 +19,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             $this->record = insert_item($itemMetadata, $elementTexts);
             //dig up the correct owner information, importing the user if needed
             $this->updateItemOwner($this->record);
-            $this->addApiRecordIdMap();
+            $this->addOmekaApiImportRecordIdMap();
         }
         //import files after the item is there, so the file has an item id to use
         //we're also keeping track of the correspondences between local and remote
@@ -47,7 +47,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             $item->save();
             return;
         }
-        $owner = $this->db->getTable('ApiRecordIdMap')->localRecord('User', $ownerId, $this->endpointUri);
+        $owner = $this->db->getTable('OmekaApiImportRecordIdMap')->localRecord('User', $ownerId, $this->endpointUri);
         if($owner) {
             $item->owner_id = $owner->id;
         } else {
@@ -152,7 +152,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             }
             $item->saveFiles();
             $fileRecord = array_pop($fileRecords);
-            $map = new ApiRecordIdMap();
+            $map = new OmekaApiImportRecordIdMap();
             $map->record_type = 'File';
             $map->local_id = $fileRecord->id;
             $map->external_id = $fileData['externalId'];
@@ -176,7 +176,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             _log($response->getMessage());
         }
 
-        $externalIds = $this->db->getTable('ApiRecordIdMap')
+        $externalIds = $this->db->getTable('OmekaApiImportRecordIdMap')
                                 ->findExternalIdsByParams(array('record_type' =>'File',
                                                                'endpoint_uri' => $this->endpointUri
                                                          ));

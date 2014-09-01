@@ -24,7 +24,7 @@ class ApiImport_ResponseAdapter_Omeka_UserAdapter extends ApiImport_ResponseAdap
             }
             try {
                 $this->record->save(true);
-                $this->addApiRecordIdMap();
+                $this->addOmekaApiImportRecordIdMap();
             } catch(Exception $e) {
                 _log($e->getMessage());
             }

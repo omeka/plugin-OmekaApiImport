@@ -17,7 +17,7 @@ class ApiImport_ResponseAdapter_Omeka_ElementSetAdapter extends ApiImport_Respon
             $this->record = new ElementSet;
         }
         //set new value if element set exists and override is set, or if it is brand new
-        if( ($this->record->exists() && get_option('api_import_override_element_set_data')) || !$this->record->exists()) {
+        if( ($this->record->exists() && get_option('omeka_api_import_override_element_set_data')) || !$this->record->exists()) {
             $this->record->description = $this->responseData['description'];
             $this->record->name = $this->responseData['name'];
             $this->record->record_type = $this->responseData['record_type'];
@@ -25,7 +25,7 @@ class ApiImport_ResponseAdapter_Omeka_ElementSetAdapter extends ApiImport_Respon
 
         try {
             $this->record->save(true);
-            $this->addApiRecordIdMap();
+            $this->addOmekaApiImportRecordIdMap();
         } catch(Exception $e) {
             _log($e);
         }

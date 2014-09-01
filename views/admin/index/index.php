@@ -1,5 +1,5 @@
 <?php
-    echo head(array('title' => "Import an Omeka Site"));
+    echo head(array('title' => __("Import an Omeka Site")));
 ?>
 
 <?php echo flash(); ?>
@@ -46,13 +46,13 @@ $url = $job['options']['endpointUri'];
 
 <div class="field">
     <div class="two columns alpha">
-        <label for='api_import_override_element_set_data'><?php echo __('Override Element Set data?'); ?></label>
+        <label for='omeka_api_import_override_element_set_data'><?php echo __('Override Element Set data?'); ?></label>
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Checking this box will overwrite your local information about Element comments, Item Type descriptions, and Element Set descriptions."); ?></p>
         <div class="input-block">
-            <?php echo $this->formCheckbox('api_import_override_element_set_data',
-                 get_option('api_import_override_element_set_data'),
+            <?php echo $this->formCheckbox('omeka_api_import_override_element_set_data',
+                 get_option('omeka_api_import_override_element_set_data'),
                  array(), 
                  array(1,0));  ?>
         </div>
