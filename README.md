@@ -24,3 +24,8 @@ Collections to be imported
 
 Element Sets will be imported. If the external site has edited the comments for Elements, you can check the box to
 override the comments that exist in your site. This is only recommended if you are importing into an empty Omeka site.
+
+Examples
+--------
+
+For converting data from the API to CSV, look at [OmekaApiToCsv](https://github.com/patrickmj/OmekaApiToCsv) and [Omekadd](https://github.com/wcaleb/omekadd)
