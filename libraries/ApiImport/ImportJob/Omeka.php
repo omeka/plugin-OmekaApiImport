@@ -23,7 +23,7 @@ class ApiImport_ImportJob_Omeka extends Omeka_Job_AbstractJob
                 );
 
         $filterArgs = array('endpointUri' => $this->endpointUri, 'omeka_service' => $this->omeka );
-        $importableResources = apply_filters('omeka_api_import_omeka_adapters', $importableResources, $filterArgs);
+        $importableResources = apply_filters('api_import_omeka_adapters', $importableResources, $filterArgs);
         foreach($importableResources as $resource=>$adapter) {
             if(in_array($resource, $this->availableResources)) {
                 $this->importRecords($resource, $adapter);
