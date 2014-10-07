@@ -57,8 +57,8 @@ class ApiImport_ImportJob_Omeka extends Omeka_Job_AbstractJob
             } catch(Exception $e) {
                 _log($e);
             }
-            $adapter->setService($this->omeka);
         }
+        $adapter->setService($this->omeka);
         $page = 1;
         
         do {
