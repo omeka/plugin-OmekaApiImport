@@ -58,8 +58,6 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
                     $this->view->job = $job;
                     $this->view->process = $firstProcess;
                 }
-            } else {
-                debug(print_r($args, true));
             }
         }
         //reget the imported urls in case the submit deleted some
