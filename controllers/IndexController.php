@@ -43,8 +43,9 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
                 }
             }
             if(isset($_POST['undo'])) {
+                $urls = $this->_helper->db->getTable('OmekaApiImport')->getImportedEndpoints();
                 foreach($_POST['undo'] as $endpointIndex) {
-                    $mapRecords = $apiMapTable->findBy(array('endpoint_uri' => $urls[$endpointIndex]));
+                    $mapRecords = $this->_helper->db->getTable('OmekaApiImportRecordIdMap')->findBy(array('endpoint_uri' => $urls[$endpointIndex]));
                     foreach($mapRecords as $record) {
                         $record->delete();
                     }
@@ -54,7 +55,11 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
 
         if (! isset($import)) {
             $imports = $this->_helper->db->getTable('OmekaApiImport')->findBy(array('sort_field' => 'id', 'sort_dir' => 'd'), 1);
-            $import = $imports[0];
+            if (empty($imports)) {
+                $import = null;
+            } else {
+                $import = $imports[0];
+            }
         }
         $this->view->import = $import;
         $urls = $this->_helper->db->getTable('OmekaApiImport')->getImportedEndpoints();
