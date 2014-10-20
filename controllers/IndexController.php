@@ -10,8 +10,6 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
         } catch(RuntimeException $e) {
             $this->_helper->flashMessenger(__("The background.php.path in config.ini is not valid. The correct path must be set for the import to work."), 'error');
         }
-        $apiMapTable = $this->_helper->db->getTable('OmekaApiImportRecordIdMap');
-        $urls = $apiMapTable->getImportedEndpoints();
         if(isset($_POST['submit'])) {
             set_option('omeka_api_import_override_element_set_data', $_POST['omeka_api_import_override_element_set_data']);
             if(!empty($_POST['api_url'])) {
@@ -24,11 +22,22 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
                     $this->_helper->flashMessenger(__("The API at %s is not active", $_POST['api_url']), 'error');
 
                 } else {
-                    $args = array('endpointUri' => $_POST['api_url'], 'key' => $_POST['key']);
+                    $import = new OmekaApiImport;
+                    $import->endpoint_uri = $_POST['api_url'];
+                    $import->status = 'starting';
+                    $import->save();
+
+                    $args = array(
+                                'endpointUri' => $_POST['api_url'],
+                                'key' => $_POST['key'],
+                                'importId' => $import->id
+                            );
                     try {
                         Zend_Registry::get('bootstrap')->getResource('jobs')
                             ->sendLongRunning('ApiImport_ImportJob_Omeka', $args);
                     } catch(Exception $e) {
+                        $import->status = 'error';
+                        $import->save();
                         _log($e);
                     }
                 }
@@ -42,26 +51,13 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
                 }
             }
         }
-        $process = $this->_helper->db->getTable('Process')
-                                        ->findBy(array(
-                                                       'sort_field' => 'id',
-                                                       'sort_dir' => 'd'
-                                                      ), 1
-                                                );
-        if (!empty($process)) {
-            $firstProcess = $process[0];
-            $args = unserialize($firstProcess->args);
-            
-            if (isset($args['job'])) {
-                $job = json_decode($args['job'], true);
-                if ($job['className'] == 'ApiImport_ImportJob_Omeka') {
-                    $this->view->job = $job;
-                    $this->view->process = $firstProcess;
-                }
-            }
+
+        if (! isset($import)) {
+            $imports = $this->_helper->db->getTable('OmekaApiImport')->findBy(array('sort_field' => 'id', 'sort_dir' => 'd'), 1);
+            $import = $imports[0];
         }
-        //reget the imported urls in case the submit deleted some
-        $urls = $apiMapTable->getImportedEndpoints();
+        $this->view->import = $import;
+        $urls = $this->_helper->db->getTable('OmekaApiImport')->getImportedEndpoints();
         $this->view->urls = $urls;
     }
 }

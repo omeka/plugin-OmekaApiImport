@@ -3,14 +3,11 @@
 ?>
 
 <?php echo flash(); ?>
-<?php if(isset($job)): ?>
-<?php 
-$url = $job['options']['endpointUri'];
-?>
+<?php if(isset($import)): ?>
 <h2><?php echo __("Most recent import"); ?></h2>
-<p><?php echo __("Started %s", $process->started); ?></p>
-<p><?php echo __("API Url"); ?>: <?php echo $url; ?></p>
-<p><?php echo __("Status"); ?>: <?php echo __('%s', $process->status); ?>
+<p><?php echo __("Started %s", $import->date); ?></p>
+<p><?php echo __("API Url"); ?>: <?php echo $import->endpoint_uri; ?></p>
+<p><?php echo __("Status"); ?>: <?php echo __('%s', $import->status); ?>
 
 <a href=""><?php echo __("Click here to update status.");?></a></p>
 <?php endif;?>

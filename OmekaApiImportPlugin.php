@@ -3,7 +3,12 @@
 
 class OmekaApiImportPlugin extends Omeka_Plugin_AbstractPlugin
 {
-    protected $_hooks = array('install', 'uninstall', 'after_delete_record');
+    protected $_hooks = array(
+        'install',
+        'uninstall',
+        'upgrade',
+        'after_delete_record'
+        );
     protected $_filters = array('admin_navigation_main');
 
     public function hookInstall()
@@ -21,6 +26,18 @@ class OmekaApiImportPlugin extends Omeka_Plugin_AbstractPlugin
             ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
         ";
         $db->query($sql);
+
+        $sql = "
+            CREATE TABLE IF NOT EXISTS `$db->OmekaApiImport` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `endpoint_uri` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+              `status` tinytext NOT NULL,
+              `date` timestamp,
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+        ";
+
+        $db->query($sql);
     }
 
     public function hookUninstall()
@@ -28,6 +45,42 @@ class OmekaApiImportPlugin extends Omeka_Plugin_AbstractPlugin
         $db = get_db();
         $sql = "DROP TABLE IF EXISTS `$db->OmekaApiImportRecordIdMap`";
         $db->query($sql);
+    }
+
+    public function hookUpgrade($args)
+    {
+        $oldVersion = $args['old_version'];
+        $newVersion = $args['new_version'];
+
+        if (version_compare($oldVersion, '1.1.1', '<')) {
+            $db = get_db();
+            $sql = "
+                CREATE TABLE IF NOT EXISTS `$db->OmekaApiImport` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `endpoint_uri` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+                  `status` tinytext NOT NULL,
+                  `date` timestamp,
+                  PRIMARY KEY (`id`)
+                ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+            ";
+
+            $db->query($sql);
+
+            $sql = "
+                SELECT DISTINCT `endpoint_uri`
+                FROM `$db->OmekaApiImportRecordIdMap`
+                WHERE 1
+            ";
+            $uris = $db->fetchCol($sql);
+            $values = array();
+            foreach ($uris as $uri) {
+                $values[] = "(NULL, '$uri', '', CURRENT_TIMESTAMP)";
+            }
+            $sql = "
+                INSERT INTO `$db->OmekaApiImport` (`id`, `endpoint_uri`, `status`, `date`) VALUES 
+            " . join(", ",  $values);
+            $db->query($sql);
+        }
     }
 
     public function filterAdminNavigationMain($nav)

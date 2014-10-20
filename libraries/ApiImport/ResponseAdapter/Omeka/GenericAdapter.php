@@ -36,12 +36,8 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
             $this->record = new $this->recordType;
         }
         $this->setFromResponseData();
-        try {
-            $this->record->save(true);
-            $this->addOmekaApiImportRecordIdMap();
-        } catch (Exception $e) {
-            _log($e);
-        }
+        $this->record->save(true);
+        $this->addOmekaApiImportRecordIdMap();
         return $this->record;
     }
 
