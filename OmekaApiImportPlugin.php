@@ -45,6 +45,8 @@ class OmekaApiImportPlugin extends Omeka_Plugin_AbstractPlugin
         $db = get_db();
         $sql = "DROP TABLE IF EXISTS `$db->OmekaApiImportRecordIdMap`";
         $db->query($sql);
+        $sql = "DROP TABLE IF EXISTS `$db->OmekaApiImport`";
+        $db->query($sql);
     }
 
     public function hookUpgrade($args)
