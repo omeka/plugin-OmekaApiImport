@@ -74,14 +74,17 @@ class OmekaApiImportPlugin extends Omeka_Plugin_AbstractPlugin
                 WHERE 1
             ";
             $uris = $db->fetchCol($sql);
-            $values = array();
-            foreach ($uris as $uri) {
-                $values[] = "(NULL, '$uri', '', CURRENT_TIMESTAMP)";
+            if (! empty($uris)) {
+                $values = array();
+                foreach ($uris as $uri) {
+                    $values[] = "(NULL, '$uri', '', CURRENT_TIMESTAMP)";
+                }
+                $sql = "
+                    INSERT INTO `$db->OmekaApiImport` (`id`, `endpoint_uri`, `status`, `date`) VALUES 
+                " . join(", ",  $values);
+                debug($sql);
+                $db->query($sql);
             }
-            $sql = "
-                INSERT INTO `$db->OmekaApiImport` (`id`, `endpoint_uri`, `status`, `date`) VALUES 
-            " . join(", ",  $values);
-            $db->query($sql);
         }
     }
 
