@@ -82,7 +82,6 @@ class OmekaApiImportPlugin extends Omeka_Plugin_AbstractPlugin
                 $sql = "
                     INSERT INTO `$db->OmekaApiImport` (`id`, `endpoint_uri`, `status`, `date`) VALUES 
                 " . join(", ",  $values);
-                debug($sql);
                 $db->query($sql);
             }
         }
