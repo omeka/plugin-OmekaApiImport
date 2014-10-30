@@ -74,8 +74,27 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
         if(!$responseData) {
             $responseData = $this->responseData;
         }
-
+        
+        //need to work around a previous bug in contribution, which would store User Profile
+        //elements on the Item as well. This made item elements from API also include
+        //UP elements, which failed the lookup. 
+        $db = get_db();
+        $elementTable = $db->getTable('Element');
+        $sql = "
+SELECT DISTINCT external_id FROM `omeka_element_sets` 
+JOIN `omeka_omeka_api_import_record_id_maps` ON omeka_element_sets.id = local_id
+WHERE omeka_omeka_api_import_record_id_maps.record_type = 'ElementSet'
+AND omeka_element_sets.record_type = 'UserProfilesType'
+        ";
+        $userProfilesElementSetIdsMap = $db->fetchCol($sql);
+        
         foreach($responseData['element_texts'] as $elTextData) {
+            debug($elTextData['element_set']['id']);
+            debug(print_r($userProfilesElementSetIdsMap, true));
+            
+            if (in_array($elTextData['element_set']['id'], $userProfilesElementSetIdsMap)) {
+                continue;
+            }
             $elName = $elTextData['element']['name'];
             $elSet = $elTextData['element_set']['name'];
             $elTextInsertArray = array('text' => $elTextData['text'],
