@@ -87,7 +87,6 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             WHERE {$db->OmekaApiImportRecordIdMap}.record_type = 'ElementSet'
             AND {$db->ElementSet}.record_type = 'UserProfilesType'
         ";
-        debug('SQL: ' . $sql);
         $userProfilesElementSetIdsMap = $db->fetchCol($sql);
 
         foreach($responseData['element_texts'] as $elTextData) {
