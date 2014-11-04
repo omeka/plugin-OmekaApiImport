@@ -49,6 +49,10 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
                     foreach($mapRecords as $record) {
                         $record->delete();
                     }
+                    $imports = $this->_helper->db->getTable('OmekaApiImport')->findBy(array('endpoint_uri' => $urls[$endpointIndex]));
+                    foreach ($imports as $import) {
+                        $import->delete();
+                    }
                 }
             }
         }
