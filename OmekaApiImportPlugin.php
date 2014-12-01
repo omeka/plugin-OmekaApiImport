@@ -54,7 +54,7 @@ class OmekaApiImportPlugin extends Omeka_Plugin_AbstractPlugin
         $oldVersion = $args['old_version'];
         $newVersion = $args['new_version'];
 
-        if (version_compare($oldVersion, '1.1.1', '<')) {
+        if (version_compare($oldVersion, '1.1', '<')) {
             $db = get_db();
             $sql = "
                 CREATE TABLE IF NOT EXISTS `$db->OmekaApiImport` (
