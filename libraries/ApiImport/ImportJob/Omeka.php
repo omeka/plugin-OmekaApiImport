@@ -24,7 +24,6 @@ class ApiImport_ImportJob_Omeka extends Omeka_Job_AbstractJob
                 'collections'      => 'ApiImport_ResponseAdapter_Omeka_CollectionAdapter',
                 'items'            => 'ApiImport_ResponseAdapter_Omeka_ItemAdapter'
                 );
-
         $filterArgs = array('endpointUri' => $this->endpointUri, 'omeka_service' => $this->omeka );
         $importableResources = apply_filters('api_import_omeka_adapters', $importableResources, $filterArgs);
         foreach($importableResources as $resource=>$adapter) {

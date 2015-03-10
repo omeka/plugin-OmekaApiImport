@@ -128,6 +128,7 @@ class ApiImport_Service_Omeka
         if (null === $this->httpClient) {
             $this->httpClient = new Zend_Http_Client;
         }
+        $this->httpClient->setConfig(array('timeout' => 100));
         return $this->httpClient;
     }
 
