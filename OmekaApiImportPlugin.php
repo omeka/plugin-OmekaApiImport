@@ -7,7 +7,8 @@ class OmekaApiImportPlugin extends Omeka_Plugin_AbstractPlugin
         'install',
         'uninstall',
         'upgrade',
-        'after_delete_record'
+        'after_delete_record',
+        'define_acl'
         );
     protected $_filters = array('admin_navigation_main');
 
@@ -87,11 +88,21 @@ class OmekaApiImportPlugin extends Omeka_Plugin_AbstractPlugin
         }
     }
 
+    public function hookDefineAcl($args)
+    {
+        $acl = $args['acl'];
+        $acl->addResource('OmekaApiImport_Index');
+        $acl->allow('super', 'OmekaApiImport_Index');
+        $acl->deny(array('admin', 'contributor', 'researcher'), 'OmekaApiImport_Index');
+    }
+    
     public function filterAdminNavigationMain($nav)
     {
-        $nav[] = array('label' => __('Omeka Api Import'),
-                       'uri'   => url('omeka-api-import/index/index')
-                );
+        if (is_allowed('OmekaApiImport_Index', 'index')) {
+            $nav[] = array('label' => __('Omeka Api Import'),
+               'uri'   => url('omeka-api-import/index/index')
+            );
+        }
         return $nav;
     }
 
