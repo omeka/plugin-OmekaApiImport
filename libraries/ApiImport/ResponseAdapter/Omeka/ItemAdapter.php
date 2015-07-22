@@ -93,6 +93,15 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             if (in_array($elTextData['element_set']['id'], $userProfilesElementSetIdsMap)) {
                 continue;
             }
+            //work around some possible oddities from .net with element data being null
+            if (is_null($elTextData['element_set']['id'])) {
+                continue;
+            }
+
+            if (is_null($elTextData['element']['id'])) {
+                continue;
+            }
+
             $elName = $elTextData['element']['name'];
             $elSet = $elTextData['element_set']['name'];
             $elTextInsertArray = array('text' => $elTextData['text'],
