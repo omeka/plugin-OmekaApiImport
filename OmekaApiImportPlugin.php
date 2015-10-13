@@ -19,7 +19,7 @@ class OmekaApiImportPlugin extends Omeka_Plugin_AbstractPlugin
             CREATE TABLE IF NOT EXISTS `$db->OmekaApiImportRecordIdMap` (
               `id` int(11) NOT NULL AUTO_INCREMENT,
               `local_id` int(11) NOT NULL,
-              `record_type` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+              `record_type` varchar(50) COLLATE latin1_general_ci NOT NULL,
               `external_id` int(11) NOT NULL,
               `endpoint_uri` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
               PRIMARY KEY (`id`),
@@ -109,8 +109,7 @@ class OmekaApiImportPlugin extends Omeka_Plugin_AbstractPlugin
     public function hookAfterDeleteRecord($args)
     {
         $record = $args['record'];
-        
-        if ($record instanceof Omeka_Plugin_AbstractPlugin) {
+        if ($record instanceof Plugin) {
             return;
         }
         $apiRecordMap = get_db()->getTable('OmekaApiImportRecordIdMap')->findBy(array('local_id' => $record->id,
