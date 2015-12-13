@@ -13,7 +13,8 @@ class ApiImport_ResponseAdapter_Omeka_UserAdapter extends ApiImport_ResponseAdap
         }
 
         //try by email address
-        if($user = $this->db->getTable('User')->findByEmail($this->responseData['email']) ) {
+        $user = $this->db->getTable('User')->findByEmail($this->responseData['email']);
+        if ($user) {
             $this->record = $user;
         } else {
             $this->record = new User;
