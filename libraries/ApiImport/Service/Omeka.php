@@ -61,7 +61,7 @@ class ApiImport_Service_Omeka
             ->resetParameters()
             ->setEncType('multipart/form-data')
             ->setUri($omeka->getApiBaseUrl() . '/files')
-            ->setMethod(Http\Request::METHOD_POST)
+            ->setMethod('post')
             ->setFileUpload($filename, 'file')
             ->setParameterPost(array('data' => $data))
             ->setParameterGet($params);
