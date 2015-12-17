@@ -11,7 +11,6 @@ class ApiImport_ImportJob_Omeka extends Omeka_Job_AbstractJob
 
     public function perform()
     {
-        echo 'beginning';
         _log("Beginning Import", Zend_Log::INFO);
         $this->import->status = 'in progress';
         $this->import->save();
