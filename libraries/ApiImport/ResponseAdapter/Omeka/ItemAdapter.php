@@ -136,7 +136,8 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             } else {
                 //import the collection
                 //older version of API exposed non-public collection info on the item
-                if ($collection = $this->importCollection($collectionExternalId)) {
+                $collection = $this->importCollection($collectionExternalId);
+                if ($collection) {
                     $collectionId = $collection->id;
                 }
             }
