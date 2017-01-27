@@ -13,9 +13,10 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
         if(isset($_POST['submit'])) {
             set_option('omeka_api_import_override_element_set_data', $_POST['omeka_api_import_override_element_set_data']);
             if(!empty($_POST['api_url'])) {
+                $endpointUri = rtrim($_POST['api_url'], '/');
                 //do a quick check for whether the API is active
                 $client = new Zend_Http_Client;
-                $client->setUri($_POST['api_url'] . '/site');
+                $client->setUri($endpointUri . '/site');
                 $response = json_decode($client->request()->getBody(), true);
 
                 if(isset($response['message'])) {
@@ -23,12 +24,12 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
 
                 } else {
                     $import = new OmekaApiImport;
-                    $import->endpoint_uri = $_POST['api_url'];
+                    $import->endpoint_uri = $endpointUri;
                     $import->status = 'starting';
                     $import->save();
 
                     $args = array(
-                                'endpointUri' => $_POST['api_url'],
+                                'endpointUri' => $endpointUri,
                                 'key' => $_POST['key'],
                                 'importId' => $import->id
                             );
