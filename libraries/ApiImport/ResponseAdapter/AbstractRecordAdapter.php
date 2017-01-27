@@ -33,7 +33,7 @@ abstract class ApiImport_ResponseAdapter_AbstractRecordAdapter implements ApiImp
 
     public function resetResponseData($responseData)
     {
-        $this->construct($responseData, $this->endpointUri, $recordType);
+        $this->construct($responseData, $this->endpointUri);
     }
 
     public function setService($service)
@@ -93,7 +93,7 @@ abstract class ApiImport_ResponseAdapter_AbstractRecordAdapter implements ApiImp
         $map->save();
     }
 
-    protected function construct($responseData, $endpointUri, $recordType)
+    protected function construct($responseData, $endpointUri, $recordType = null)
     {
         if($recordType) {
             $this->recordType = $recordType;
