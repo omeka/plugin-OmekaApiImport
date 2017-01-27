@@ -20,14 +20,26 @@ class ApiImport_ResponseAdapter_Omeka_ElementAdapter extends ApiImport_ResponseA
 
         if(!$this->record) {
             $this->record = new Element;
-        }
-        //set new value if element set exists and override is set, or if it is brand new
-        if( ($this->record->exists() && get_option('omeka_api_import_override_element_set_data')) || !$this->record->exists()) {
             $this->record->description = $this->responseData['description'];
             $this->record->name = $this->responseData['name'];
+            $this->record->comment = $this->responseData['comment'];
             $this->record->element_set_id = $localElementSet->id;
+            // avoid database conflicts with order settings
+            // if order is changed on remote side, this could create
+            // database errors that break everything
+            $this->record->order = null;
+        }
+
+        
+        
+        //set new value if element set exists and override is set, or if it is brand new
+        if( ($this->record->exists() && get_option('omeka_api_import_override_element_set_data'))) {
+            $this->record->description = $this->responseData['description'];
+            $this->record->name = $this->responseData['name'];
             $this->record->order = $this->responseData['order'];
             $this->record->comment = $this->responseData['comment'];
+            debug($this->record->name);
+            debug($this->record->order);
         }
 
         try {
