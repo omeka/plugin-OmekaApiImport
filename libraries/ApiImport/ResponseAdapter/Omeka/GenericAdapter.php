@@ -111,6 +111,9 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
     protected function getLocalUserId($userData)
     {
         $userId = $userData['id'];
+        if (is_null($userId)) {
+            $userId = 1;
+        }
         $localUser = $this->db->getTable('OmekaApiImportRecordIdMap')->localRecord('User', $userId, $this->endpointUri);
         if($localUser) {
             return $localUser->id;
