@@ -35,6 +35,7 @@ class ApiImport_ImportJob_Omeka extends Omeka_Job_AbstractJob
         $this->import->status = 'completed';
         $this->import->save();
         _log("Done Importing", Zend_Log::INFO);
+        _log($this->importUsers);
     }
 
     public function setKey($key)
