@@ -12,6 +12,7 @@ abstract class ApiImport_ResponseAdapter_AbstractRecordAdapter implements ApiImp
     protected $record;
     protected $recordType;
     protected $endpointUri;
+    protected $importUsers;
 
     /**
      * Injection of a class service doing the remote data-gathering. One of these typically passes in the $responseData
@@ -26,7 +27,7 @@ abstract class ApiImport_ResponseAdapter_AbstractRecordAdapter implements ApiImp
      * @param string $endpointUri The API endpoint being used
      * @param string $recordType The Omeka record type being inserted/updated
      */
-    public function __construct($responseData, $endpointUri, $recordType = null)
+    public function __construct($responseData, $endpointUri, $recordType = null, $importUsers = true)
     {
         $this->construct($responseData, $endpointUri, $recordType);
     }
@@ -93,7 +94,7 @@ abstract class ApiImport_ResponseAdapter_AbstractRecordAdapter implements ApiImp
         $map->save();
     }
 
-    protected function construct($responseData, $endpointUri, $recordType = null)
+    protected function construct($responseData, $endpointUri, $recordType = null, $importUsers = true)
     {
         if($recordType) {
             $this->recordType = $recordType;
@@ -101,6 +102,7 @@ abstract class ApiImport_ResponseAdapter_AbstractRecordAdapter implements ApiImp
         $this->db = get_db();
         $this->responseData = $responseData;
         $this->endpointUri = $endpointUri;
+        $this->importUsers = $importUsers;
         if(!empty($this->responseData)) {
             $this->record = $this->localRecord();
         }

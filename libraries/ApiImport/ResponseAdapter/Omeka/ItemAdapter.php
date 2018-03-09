@@ -41,6 +41,11 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
      */
     protected function updateItemOwner($item)
     {
+        if (! $this->importUsers) {
+            $item->owner_id = current_user()->id;
+            $item->save();
+            return;
+        }
         $ownerId = $this->responseData['owner']['id'];
         if (! $ownerId) {
             $item->owner_id = null;

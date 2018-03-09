@@ -2,6 +2,8 @@
 class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionController
 {
 
+    protected $_pluginConfig = null;
+
     public function indexAction()
     {
         //check cli path
@@ -28,10 +30,13 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
                     $import->status = 'starting';
                     $import->save();
 
+                    $pluginConfig = $this->_getPluginConfig();
+
                     $args = array(
                                 'endpointUri' => $endpointUri,
                                 'key' => $_POST['key'],
-                                'importId' => $import->id
+                                'importId' => $import->id,
+                                'includeUsers' => $pluginConfig['includeUsers'],
                             );
                     try {
                         Zend_Registry::get('bootstrap')->getResource('jobs')
@@ -69,5 +74,25 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
         $this->view->import = $import;
         $urls = $this->_helper->db->getTable('OmekaApiImport')->getImportedEndpoints();
         $this->view->urls = $urls;
+    }
+
+    /**
+     * Returns the plugin configuration
+     *
+     * @return array
+     */
+    protected function _getPluginConfig()
+    {
+        if (!$this->_pluginConfig) {
+            $config = $this->getInvokeArg('bootstrap')->config->plugins;
+            if ($config && isset($config->CsvImport)) {
+                $this->_pluginConfig = $config->CsvImport->toArray();
+            }
+            if (!array_key_exists('fileDestination', $this->_pluginConfig)) {
+                $this->_pluginConfig['fileDestination'] =
+                Zend_Registry::get('storage')->getTempDir();
+            }
+        }
+        return $this->_pluginConfig;
     }
 }
