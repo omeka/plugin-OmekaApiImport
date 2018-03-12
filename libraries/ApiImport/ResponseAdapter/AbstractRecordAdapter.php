@@ -29,7 +29,6 @@ abstract class ApiImport_ResponseAdapter_AbstractRecordAdapter implements ApiImp
      */
     public function __construct($responseData, $endpointUri, $recordType = null, $importUsers = true)
     {
-        _log('constructing ' . $importUsers);
         $this->construct($responseData, $endpointUri, $recordType, $importUsers);
     }
 
