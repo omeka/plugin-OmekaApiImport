@@ -29,12 +29,13 @@ abstract class ApiImport_ResponseAdapter_AbstractRecordAdapter implements ApiImp
      */
     public function __construct($responseData, $endpointUri, $recordType = null, $importUsers = true)
     {
-        $this->construct($responseData, $endpointUri, $recordType);
+        _log('constructing ' . $importUsers);
+        $this->construct($responseData, $endpointUri, $recordType, $importUsers);
     }
 
     public function resetResponseData($responseData)
     {
-        $this->construct($responseData, $this->endpointUri);
+        $this->construct($responseData, $this->endpointUri, null, $this->importUsers);
     }
 
     public function setService($service)
@@ -102,7 +103,7 @@ abstract class ApiImport_ResponseAdapter_AbstractRecordAdapter implements ApiImp
         $this->db = get_db();
         $this->responseData = $responseData;
         $this->endpointUri = $endpointUri;
-        $this->importUsers = $importUsers;
+        $this->importUsers = (bool) $importUsers;
         if(!empty($this->responseData)) {
             $this->record = $this->localRecord();
         }

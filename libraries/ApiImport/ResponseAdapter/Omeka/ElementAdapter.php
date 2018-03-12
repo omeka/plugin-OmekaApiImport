@@ -38,8 +38,6 @@ class ApiImport_ResponseAdapter_Omeka_ElementAdapter extends ApiImport_ResponseA
             $this->record->name = $this->responseData['name'];
             $this->record->order = $this->responseData['order'];
             $this->record->comment = $this->responseData['comment'];
-            debug($this->record->name);
-            debug($this->record->order);
         }
 
         try {

@@ -12,9 +12,7 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
         } catch(RuntimeException $e) {
             $this->_helper->flashMessenger(__("The background.php.path in config.ini is not valid. The correct path must be set for the import to work."), 'error');
         }
-        
-        $pluginConfig = $this->_getPluginConfig();
-        
+
         if(isset($_POST['submit'])) {
             set_option('omeka_api_import_override_element_set_data', $_POST['omeka_api_import_override_element_set_data']);
             if(!empty($_POST['api_url'])) {
@@ -39,7 +37,7 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
                                 'endpointUri' => $endpointUri,
                                 'key' => $_POST['key'],
                                 'importId' => $import->id,
-                                'includeUsers' => $pluginConfig['includeUsers'],
+                                'importUsers' => $pluginConfig['importUsers'],
                             );
                     try {
                         Zend_Registry::get('bootstrap')->getResource('jobs')
