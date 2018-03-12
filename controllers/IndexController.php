@@ -32,12 +32,13 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
                     $import->save();
 
                     $pluginConfig = $this->_getPluginConfig();
+                    $importUsers = isset($pluginConfig['importUsers']) ? $pluginConfig['importUsers'] : true;
 
                     $args = array(
                                 'endpointUri' => $endpointUri,
                                 'key' => $_POST['key'],
                                 'importId' => $import->id,
-                                'importUsers' => $pluginConfig['importUsers'],
+                                'importUsers' => $importUsers,
                             );
                     try {
                         Zend_Registry::get('bootstrap')->getResource('jobs')
