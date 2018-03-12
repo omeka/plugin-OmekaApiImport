@@ -18,12 +18,18 @@ Usage
 Install the plugin in the usual way. Click the `Omeka Api Import` tab in the admin screen. Enter the API URL of the
 site from which you want to import data.
 
-Optionally, enter the API you have for the external Omeka site. This will have to be provided by an administrator
+Optionally, enter the API key you have for the external Omeka site. This will have to be provided by an administrator
 of that site. If your key provides sufficient permissions, this will allow Users and non-public Items and
 Collections to be imported
 
 Element Sets will be imported. If the external site has edited the comments for Elements, you can check the box to
 override the comments that exist in your site. This is only recommended if you are importing into an empty Omeka site.
+
+As of version 1.2, includes a configuration option for whether to include User data in the import. Place this line in your Omeka installation's `application/config/config.ini` file
+
+```
+plugins.OmekaApiImport.importUsers = false;
+```
 
 Examples
 --------
