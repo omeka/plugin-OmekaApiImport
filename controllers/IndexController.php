@@ -40,9 +40,10 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
                                 'importId' => $import->id,
                                 'importUsers' => $importUsers,
                             );
-                    try {
-                        Zend_Registry::get('bootstrap')->getResource('jobs')
-                            ->sendLongRunning('ApiImport_ImportJob_Omeka', $args);
+                    $jobsDispatcher = Zend_Registry::get('bootstrap')->getResource('jobs');
+                    $jobsDispatcher->setQueueNameLongRunning('imports');
+                    try {                       
+                        $jobsDispatcher->sendLongRunning('ApiImport_ImportJob_Omeka', $args);
                     } catch(Exception $e) {
                         $import->status = 'error';
                         $import->save();
