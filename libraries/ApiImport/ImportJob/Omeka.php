@@ -51,6 +51,10 @@ class ApiImport_ImportJob_Omeka extends Omeka_Job_AbstractJob
     {
         $this->importId = $importId;
         $import = get_db()->getTable('OmekaApiImport')->find($importId);
+
+        if (!$import) {
+            throw new RuntimeException('Unable to find import record');
+        }
         $this->import = $import;
     }
     
