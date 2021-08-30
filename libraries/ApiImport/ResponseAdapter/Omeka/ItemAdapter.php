@@ -130,11 +130,14 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
         $metadata['public'] = $this->responseData['public'];
         $metadata['featured'] = $this->responseData['featured'];
         //external vs internal collection ids could be different
-        $collectionExternalId = $this->responseData['collection']['id'];
-        $collectionId = null;
-        if(is_null($collectionExternalId)) {
-            $metadata['collection_id'] = null;
+        if (isset($this->responseData['collection']['id'])) {
+            $collectionExternalId = $this->responseData['collection']['id'];
         } else {
+            $collectionExternalId = null;
+        }
+
+        $collectionId = null;
+        if (!is_null($collectionExternalId)) {
             $collection = $this->localRecord('Collection', $collectionExternalId);
             if($collection) {
                 $collectionId = $collection->id;
@@ -146,8 +149,9 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
                     $collectionId = $collection->id;
                 }
             }
-            $metadata['collection_id'] = $collectionId;
         }
+        $metadata['collection_id'] = $collectionId;
+
         $itemType = $this->responseData['item_type'] ? $this->localRecord('ItemType', $this->responseData['item_type']['id']) : null;
         if($itemType) {
             $itemTypeId = $itemType->id;

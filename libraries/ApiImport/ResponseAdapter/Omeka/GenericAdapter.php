@@ -100,7 +100,12 @@ class ApiImport_ResponseAdapter_Omeka_GenericAdapter extends ApiImport_ResponseA
     {
         $remoteId = $resourceData['id'];
         $localRecord = $this->db->getTable('OmekaApiImportRecordIdMap')->localRecord($type, $remoteId, $this->endpointUri);
-        return $localRecord->id;
+        if ($localRecord) {
+            return $localRecord->id;
+        } else {
+            _log(__('Unable to find imported record %s#%s when importing %s#%s', $type, $remoteId, $this->recordType, $this->externalId()), Zend_Log::WARN);
+            return null;
+        }
     }
 
     /**
