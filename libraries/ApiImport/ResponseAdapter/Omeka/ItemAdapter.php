@@ -175,6 +175,8 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             $item,
             array()
         );
+        $this->_addIngestValidators($ingester);
+
         $files = $this->files();
 
         //have to step through one by one so we can save the id map for each $fileRecord and $fileData
@@ -240,5 +242,21 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             return $adapter->getRecord();
         }
         return false;
+    }
+
+    protected function _addIngestValidators(Omeka_File_Ingest_AbstractIngest $ingester)
+    {
+        $validators = get_option(File::DISABLE_DEFAULT_VALIDATION_OPTION)
+                    ? array()
+                    : array(
+                        'extension whitelist' => new Omeka_Validate_File_Extension,
+                        'MIME type whitelist' => new Omeka_Validate_File_MimeType);
+
+        $validators = apply_filters('file_ingest_validators', $validators);
+
+        // Build the default validators.
+        foreach ($validators as $validator) {
+            $ingester->addValidator($validator);
+        }
     }
 }
