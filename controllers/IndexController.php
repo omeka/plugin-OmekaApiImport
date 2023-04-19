@@ -16,7 +16,7 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
         if(isset($_POST['submit'])) {
             set_option('omeka_api_import_override_element_set_data', $_POST['omeka_api_import_override_element_set_data']);
             if(!empty($_POST['api_url'])) {
-                $endpointUri = rtrim($_POST['api_url'], '/');
+                $endpointUri = rtrim(trim($_POST['api_url']), '/');
                 //do a quick check for whether the API is active
                 $client = new Zend_Http_Client;
                 $client->setUri($endpointUri . '/site');
