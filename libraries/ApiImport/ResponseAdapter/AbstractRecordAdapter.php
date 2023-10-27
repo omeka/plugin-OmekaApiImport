@@ -47,6 +47,11 @@ abstract class ApiImport_ResponseAdapter_AbstractRecordAdapter implements ApiImp
         return $this->service;
     }
 
+    public function setImportUsers($importUsers)
+    {
+        $this->importUsers = (bool) $importUsers;
+    }
+
     /**
      * Return the local record being worked with
      *
