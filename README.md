@@ -1,5 +1,5 @@
-OmekaApiImport
-=====================
+Omeka API Import
+================
 
 Use Omeka 2.1's API to do an Omeka site-to-site import
 

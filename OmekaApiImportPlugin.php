@@ -99,7 +99,7 @@ class OmekaApiImportPlugin extends Omeka_Plugin_AbstractPlugin
     public function filterAdminNavigationMain($nav)
     {
         if (is_allowed('OmekaApiImport_Index', 'index')) {
-            $nav[] = array('label' => __('Omeka Api Import'),
+            $nav[] = array('label' => __('Omeka API Import'),
                'uri'   => url('omeka-api-import/index/index')
             );
         }

@@ -6,7 +6,7 @@
 <?php if(isset($import)): ?>
 <h2><?php echo __("Most recent import"); ?></h2>
 <p><?php echo __("Started %s", $import->date); ?></p>
-<p><?php echo __("API Url"); ?>: <?php echo $import->endpoint_uri; ?></p>
+<p><?php echo __("API URL"); ?>: <?php echo $import->endpoint_uri; ?></p>
 <p><?php echo __("Status"); ?>: <?php echo __('%s', $import->status); ?>
 
 <a href=""><?php echo __("Click here to update status.");?></a></p>
@@ -18,7 +18,7 @@
 
 <div class="field">
     <div class="two columns alpha">
-        <label for='api_url'><?php echo __("Remote API Url"); ?></label>
+        <label for='api_url'><?php echo __("Remote API URL"); ?></label>
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"></p>
@@ -64,8 +64,7 @@
         <label><?php echo __('Undo previous imports'); ?></label>
     </div>
     <div class="inputs five columns omega">
-        <p class="explanation"></p>
-        <div class="input-block">
+        <div class="undo-checkboxes">
         <?php foreach($urls as $index=>$url): ?>
             <div>
                 <input name='undo[]' value='<?php echo $index; ?>' type='checkbox' /> <span class='url'><?php echo $url; ?></span>
