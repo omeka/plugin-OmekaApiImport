@@ -20,11 +20,31 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
                 //do a quick check for whether the API is active
                 $client = new Zend_Http_Client;
                 $client->setUri($endpointUri . '/site');
-                $response = json_decode($client->request()->getBody(), true);
+                if (!empty($_POST['key'])) {
+                    $client->setParameterGet('key', $_POST['key']);
+                }
 
-                if(isset($response['message'])) {
-                    $this->_helper->flashMessenger(__("The API at %s is not active", $_POST['api_url']), 'error');
+                $exception = null;
+                try {
+                    $response = $client->request();
+                    $body = json_decode($response->getBody(), true);
+                } catch (Zend_Http_Client_Exception $e) {
+                    $exception = $e;
+                }
 
+                if ($exception) {
+                    $this->_helper->flashMessenger($exception->getMessage(), 'error');
+                } else if ($response->isError()) {
+                    $message = isset($body['message']) ? $body['message'] : null;
+                    if ($message == 'API is disabled') {
+                        $this->_helper->flashMessenger(__('The API at %s is not active', $endpointUri), 'error');
+                    } else if ($message == 'Invalid key.')  {
+                        $this->_helper->flashMessenger(__('The provided API key was invalid'), 'error');
+                    } else {
+                        $this->_helper->flashMessenger(__('Error accessing the API at %s (%s), check that you have the right URL', $endpointUri, $response->getStatus()), 'error');
+                    }
+                } else if ($body === null) {
+                    $this->_helper->flashMessenger(__('API response was not JSON, check that you have the right URL'), 'error');
                 } else {
                     $import = new OmekaApiImport;
                     $import->endpoint_uri = $endpointUri;
