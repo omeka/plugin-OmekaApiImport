@@ -21,7 +21,7 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
                 $client = new Zend_Http_Client;
                 $client->setUri($endpointUri . '/site');
                 if (!empty($_POST['key'])) {
-                    $client->setParameterGet('key', $_POST['key']);
+                    $client->setParameterGet('key', trim($_POST['key']));
                 }
 
                 $exception = null;
@@ -55,11 +55,11 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
                     $importUsers = isset($pluginConfig['importUsers']) ? $pluginConfig['importUsers'] : true;
 
                     $args = array(
-                                'endpointUri' => $endpointUri,
-                                'key' => $_POST['key'],
-                                'importId' => $import->id,
-                                'importUsers' => $importUsers,
-                            );
+                        'endpointUri' => $endpointUri,
+                        'key' => trim($_POST['key']),
+                        'importId' => $import->id,
+                        'importUsers' => $importUsers,
+                    );
                     $jobsDispatcher = Zend_Registry::get('bootstrap')->getResource('jobs');
                     $jobsDispatcher->setQueueNameLongRunning('imports');
                     try {                       
