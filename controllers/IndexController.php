@@ -24,27 +24,35 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
                     $client->setParameterGet('key', trim($_POST['key']));
                 }
 
-                $exception = null;
+                $error = null;
                 try {
                     $response = $client->request();
                     $body = json_decode($response->getBody(), true);
                 } catch (Zend_Http_Client_Exception $e) {
-                    $exception = $e;
+                    $error = $e->getMessage();
                 }
 
-                if ($exception) {
-                    $this->_helper->flashMessenger($exception->getMessage(), 'error');
+                if ($error) {
+                    // we already hit an error, skip the other checks
                 } else if ($response->isError()) {
                     $message = isset($body['message']) ? $body['message'] : null;
                     if ($message == 'API is disabled') {
-                        $this->_helper->flashMessenger(__('The API at %s is not active', $endpointUri), 'error');
+                        $error = __('The API at %s is not active', $endpointUri);
                     } else if ($message == 'Invalid key.')  {
-                        $this->_helper->flashMessenger(__('The provided API key was invalid'), 'error');
+                        $error = __('The provided API key was invalid');
                     } else {
-                        $this->_helper->flashMessenger(__('Error accessing the API at %s (%s), check that you have the right URL', $endpointUri, $response->getStatus()), 'error');
+                        $error = __('Error accessing the API at %s (%s), check that you have the right URL', $endpointUri, $response->getStatus());
                     }
                 } else if ($body === null) {
-                    $this->_helper->flashMessenger(__('API response was not JSON, check that you have the right URL'), 'error');
+                    $error = __('The API response was not JSON, check that you have the right URL');
+                } else if (!isset($body['omeka_url'])) {
+                    $error = __('%s is not an Omeka Classic API URL, check that you have the right URL', $endpointUri);
+                } else if ($body['omeka_url'] === WEB_ROOT) {
+                    $error = __('You cannot import a site into itself');
+                }
+
+                if ($error) {
+                    $this->_helper->flashMessenger($error, 'error');
                 } else {
                     $import = new OmekaApiImport;
                     $import->endpoint_uri = $endpointUri;
