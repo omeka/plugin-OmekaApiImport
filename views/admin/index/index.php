@@ -21,7 +21,6 @@
         <label for='api_url'><?php echo __("Remote API URL"); ?></label>
     </div>
     <div class="inputs five columns omega">
-        <p class="explanation"></p>
         <div class="input-block">
             <input name='api_url' type='text' />
         </div>
@@ -34,7 +33,6 @@
         <label for='key'><?php echo __("API Key"); ?></label>
     </div>
     <div class="inputs five columns omega">
-        <p class="explanation"></p>
         <div class="input-block">
             <input name='key' type='text' size="30" />
         </div>
