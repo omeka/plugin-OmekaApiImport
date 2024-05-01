@@ -222,6 +222,7 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
         foreach($responseData as $fileData) {
             if(! in_array($fileData['id'], $ids)) {
                 $files[] = array('source'   => $fileData['file_urls']['original'],
+                                 'name' => $fileData['original_filename'],
                                  'metadata' => $this->elementTexts($fileData),
                                  //add the external id so we can produce the map
                                  'externalId' => $fileData['id']
