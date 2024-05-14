@@ -16,68 +16,7 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
         if(isset($_POST['submit'])) {
             set_option('omeka_api_import_override_element_set_data', $_POST['omeka_api_import_override_element_set_data']);
             if(!empty($_POST['api_url'])) {
-                $endpointUri = rtrim(trim($_POST['api_url']), '/');
-                //do a quick check for whether the API is active
-                $client = new Zend_Http_Client;
-                $client->setUri($endpointUri . '/site');
-                if (!empty($_POST['key'])) {
-                    $client->setParameterGet('key', trim($_POST['key']));
-                }
-
-                $error = null;
-                try {
-                    $response = $client->request();
-                    $body = json_decode($response->getBody(), true);
-                } catch (Zend_Http_Client_Exception $e) {
-                    $error = $e->getMessage();
-                }
-
-                if ($error) {
-                    // we already hit an error, skip the other checks
-                } else if ($response->isError()) {
-                    $message = isset($body['message']) ? $body['message'] : null;
-                    if ($message == 'API is disabled') {
-                        $error = __('The API at %s is not active', $endpointUri);
-                    } else if ($message == 'Invalid key.')  {
-                        $error = __('The provided API key was invalid');
-                    } else {
-                        $error = __('Error accessing the API at %s (%s), check that you have the right URL', $endpointUri, $response->getStatus());
-                    }
-                } else if ($body === null) {
-                    $error = __('The API response was not JSON, check that you have the right URL');
-                } else if (!isset($body['omeka_url'])) {
-                    $error = __('%s is not an Omeka Classic API URL, check that you have the right URL', $endpointUri);
-                } else if ($body['omeka_url'] === WEB_ROOT) {
-                    $error = __('You cannot import a site into itself');
-                }
-
-                if ($error) {
-                    $this->_helper->flashMessenger($error, 'error');
-                } else {
-                    $import = new OmekaApiImport;
-                    $import->endpoint_uri = $endpointUri;
-                    $import->status = 'starting';
-                    $import->save();
-
-                    $pluginConfig = $this->_getPluginConfig();
-                    $importUsers = isset($pluginConfig['importUsers']) ? $pluginConfig['importUsers'] : true;
-
-                    $args = array(
-                        'endpointUri' => $endpointUri,
-                        'key' => trim($_POST['key']),
-                        'importId' => $import->id,
-                        'importUsers' => $importUsers,
-                    );
-                    $jobsDispatcher = Zend_Registry::get('bootstrap')->getResource('jobs');
-                    $jobsDispatcher->setQueueNameLongRunning('imports');
-                    try {                       
-                        $jobsDispatcher->sendLongRunning('ApiImport_ImportJob_Omeka', $args);
-                    } catch(Exception $e) {
-                        $import->status = 'error';
-                        $import->save();
-                        _log($e);
-                    }
-                }
+                $this->_doImport();
             }
             if(isset($_POST['undo'])) {
                 $urls = $this->_helper->db->getTable('OmekaApiImport')->getImportedEndpoints();
@@ -105,6 +44,81 @@ class OmekaApiImport_IndexController extends Omeka_Controller_AbstractActionCont
         $this->view->import = $import;
         $urls = $this->_helper->db->getTable('OmekaApiImport')->getImportedEndpoints();
         $this->view->urls = $urls;
+    }
+
+    protected function _doImport()
+    {
+        $endpointUri = rtrim(trim($_POST['api_url']), '/');
+        //do a quick check for whether the API is active
+        $client = new Zend_Http_Client;
+
+        try {
+            $client->setUri($endpointUri . '/site');
+        } catch (Zend_Uri_Exception $e) {
+            $this->_helper->flashMessenger('Invalid API URL. URLs must begin with http:// or https://', 'error');
+            return;
+        }
+
+        if (!empty($_POST['key'])) {
+            $client->setParameterGet('key', trim($_POST['key']));
+        }
+
+        try {
+            $response = $client->request();
+            $body = json_decode($response->getBody(), true);
+        } catch (Zend_Http_Client_Exception $e) {
+            $this->_helper->flashMessenger($e->getMessage(), 'error');
+            return;
+        }
+
+        if ($response->isError()) {
+            $message = isset($body['message']) ? $body['message'] : null;
+            if ($message == 'API is disabled') {
+                $error = __('The API at %s is not active', $endpointUri);
+            } else if ($message == 'Invalid key.')  {
+                $error = __('The provided API key was invalid');
+            } else {
+                $error = __('Error accessing the API at %s (%s), check that you have the right URL', $endpointUri, $response->getStatus());
+            }
+            $this->_helper->flashMessenger($error, 'error');
+            return;
+        }
+        if ($body === null) {
+            $this->_helper->flashMessenger(__('The API response was not JSON, check that you have the right URL'), 'error');
+            return;
+        }
+        if (!isset($body['omeka_url'])) {
+            $this->_helper->flashMessenger(__('%s is not an Omeka Classic API URL, check that you have the right URL', $endpointUri), 'error');
+            return;
+        }
+        if ($body['omeka_url'] === WEB_ROOT) {
+            $this->_helper->flashMessenger(__('You cannot import a site into itself'), 'error');
+            return;
+        }
+
+        $import = new OmekaApiImport;
+        $import->endpoint_uri = $endpointUri;
+        $import->status = 'starting';
+        $import->save();
+
+        $pluginConfig = $this->_getPluginConfig();
+        $importUsers = isset($pluginConfig['importUsers']) ? $pluginConfig['importUsers'] : true;
+
+        $args = array(
+            'endpointUri' => $endpointUri,
+            'key' => trim($_POST['key']),
+            'importId' => $import->id,
+            'importUsers' => $importUsers,
+        );
+        $jobsDispatcher = Zend_Registry::get('bootstrap')->getResource('jobs');
+        $jobsDispatcher->setQueueNameLongRunning('imports');
+        try {
+            $jobsDispatcher->sendLongRunning('ApiImport_ImportJob_Omeka', $args);
+        } catch (Exception $e) {
+            $import->status = 'error';
+            $import->save();
+            _log($e);
+        }
     }
 
     /**
