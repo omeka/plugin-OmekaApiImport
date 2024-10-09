@@ -76,15 +76,14 @@ class ApiImport_ImportJob_Omeka extends Omeka_Job_AbstractJob
         $this->import->save();
         if(is_string($adapter)) {
             try {
-                $adapter = new $adapter(null, $this->endpointUri, null, $this->importUsers);
+                $adapter = new $adapter(null, $this->endpointUri, null);
             } catch(Exception $e) {
                 $this->import->status = 'error';
                 $this->import->save();
                 _log($e);
             }
-        } elseif ($adapter instanceof ApiImport_ResponseAdapter_AbstractRecordAdapter) {
-            $adapter->setImportUsers($this->importUsers);
         }
+        $adapter->setImportUsers($this->importUsers);
         $adapter->setService($this->omeka);
         $page = 1;
 

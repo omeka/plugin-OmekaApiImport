@@ -59,7 +59,8 @@ class ApiImport_ResponseAdapter_Omeka_ItemAdapter extends ApiImport_ResponseAdap
             $response = $this->service->users->get($ownerId);
             if($response->getStatus() == 200) {
                 $responseData = json_decode($response->getBody(), true);
-                $adapter = new ApiImport_ResponseAdapter_Omeka_UserAdapter($responseData, $this->endpointUri, null, $this->importUsers);
+                $adapter = new ApiImport_ResponseAdapter_Omeka_UserAdapter($responseData, $this->endpointUri, null);
+                $adapter->setImportUsers($this->importUsers);
                 $adapter->import();
                 $item->owner_id = $adapter->record->id;
             } else {
